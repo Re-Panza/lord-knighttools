@@ -1,0 +1,81 @@
+/* =========================================
+   SELF TRICK - Stili Esclusivi
+   ========================================= */
+
+/* --- HABITAT E BONUS --- */
+.habitat-selector { display: flex; gap: 8px; margin-bottom: 16px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 12px; border: 1px solid var(--border); }
+.hab-opt { flex: 1; text-align: center; }
+.hab-opt input { display: none; }
+.hab-opt span { display: block; padding: 8px 0; font-size: 12px; font-weight: bold; color: var(--muted); cursor: pointer; border-radius: 8px; transition: 0.2s; }
+.hab-opt input:checked+span { background: rgba(96, 165, 250, .15); color: #fff; border: 1px solid var(--accent); }
+
+.bonus-area { background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); display: none; }
+.bonus-area.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-separator { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.sec-title { color: var(--gold); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+.bounce-window-config { background: rgba(96, 165, 250, 0.05); padding: 10px; border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.2); margin-bottom: 12px; position: relative; }
+
+/* --- AREA RISULTATI: TABELLA E RIGHE --- */
+.res-header-info { text-align: center; font-size: 14px; color: var(--muted); padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 12px 12px 0 0; border: 1px solid var(--border); border-bottom: none; }
+.res-header-info a { color: var(--accent); text-decoration: none; font-weight: bold; font-family: monospace; display: block; margin: 4px 0; word-break: break-all; font-size: 12px; }
+.res-header-info b { color: #fff; font-size: 15px; }
+
+.quick-bar { background: var(--card-solid); padding: 10px; border: 1px solid var(--border); border-top: none; display: flex; gap: 10px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+.back-btn { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid var(--border); padding: 0 16px; font-weight: bold; border-radius: 8px; font-size: 18px; cursor: pointer; }
+
+#resList { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-top: none; border-radius: 0 0 16px 16px; overflow: hidden; }
+
+/* LA TUA STRUTTURA A GRIGLIA ORIGINALE INTACTA */
+.res-row { display: grid; grid-template-columns: 50px 1fr 90px; gap: 10px; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); background: transparent; transition: background 0.2s; cursor: pointer; }
+.res-row:last-child { border-bottom: none; }
+.res-row:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+.res-row:hover { background: rgba(255, 255, 255, 0.05); }
+.res-row.covered { background: rgba(52, 211, 153, 0.15) !important; border-left: 3px solid var(--green); opacity: 1; filter: none; }
+
+.col-time { text-align: center; border-right: 1px solid var(--border); padding-right: 8px; }
+.t-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.t-val { font-size: 16px; color: #fff; font-weight: 700; }
+.col-info { display: flex; flex-direction: column; justify-content: center; overflow: hidden; text-align: left; }
+.info-status { font-size: 14px; font-weight: bold; margin-bottom: 3px; white-space: nowrap; }
+.col-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+
+
+/* LA NUOVA TENDINA */
+.st-body { display: none; padding: 15px; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); border-top: 1px dashed rgba(255,255,255,0.05); }
+.st-body.open { display: block; animation: slideDown 0.2s ease-out; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* STILI PER I TESTI DI DETTAGLIO NELLA TENDINA */
+.info-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.bounce-hl { color: var(--gold) !important; font-weight: bold; }
+
+/* I 5 LINK INCOLLONNATI A DESTRA NELLA TENDINA */
+.target-grid { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.target-row-generated { display: flex; justify-content: space-between; align-items: center; width: 100%; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; }
+.target-row-generated a.link-text { color: var(--text); font-family: monospace; font-size: 12px; text-decoration: none; word-break: break-all; flex: 1; margin-right: 10px; text-align: left;}
+
+.lnk-btn-launch { display: flex; align-items: center; justify-content: center; padding: 0 15px; height: 28px; background: rgba(251, 191, 36, 0.15); border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 6px; flex-shrink: 0; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+.lnk-btn-launch:active { background: var(--gold); color: #000; transform: scale(0.95); }
+
+/* --- AZIONI SECONDARIE E COLORI (BOTTONI TUOI ORIGINALI) --- */
+.btn-copri { display: flex; align-items: center; justify-content: center; width: 100%; height: 32px; background: rgba(52, 211, 153, 0.15); border: 1px solid var(--green); color: var(--green); font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+.btn-copri:active { background: var(--green); color: #000; }
+
+.btn-scopri { display: flex; align-items: center; justify-content: center; width: 100%; height: 32px; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+.btn-scopri:active { background: var(--danger); color: #fff; }
+
+.st-wait { color: var(--danger); font-weight: bold; }
+.st-now { color: var(--green); animation: pulse 1s infinite; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4); font-weight: bold; }
+.st-covered-text { color: var(--green); font-weight: bold; }
+@keyframes pulse { 50% { opacity: 0.6; } }
+
+/* Fix sfondi trasparenti nei box del tool */
+#tour-st-1, #tour-st-2, #tour-st-3, #tour-st-5, #tour-st-6, #tour-st-4 {
+    background: #1e293b; 
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 15px;
+}
