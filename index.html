@@ -2,8 +2,6 @@
 <html lang="it">
 
 <head>
-    <meta name="monetag" content="99601a38364f24d79bafff97af756e18">
-
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -42,26 +40,6 @@
 </head>
 
 <body>
-    <div id="welcome-banner">
-        <button class="close-welcome" onclick="chiudiBannerBenvenuto()">✖</button>
-        <h3 class="welcome-title" data-lang="welcome_gift_title">🎁 Regalo di Benvenuto!</h3>
-        <p class="welcome-text" data-lang="welcome_gift_desc">Copia questo codice magico. Quando troverai un <b>Lucchetto Premium</b> nei tool, incollalo per avere <b>7 Giorni di VIP Gratis!</b></p>
-        <div class="code-box">
-            <span class="code-string" id="the-magic-code">BENVENUTO7</span>
-            <button class="copy-btn" id="btn-copy-code" onclick="copiaCodice()" data-lang="btn_copy">COPIA</button>
-        </div>
-    </div>
-
-    <div id="adblock-overlay">
-        <div class="adblock-box">
-            <h2 data-lang="adblock_title">🛑 AdBlock Rilevato!</h2>
-            <p data-lang="adblock_desc">I server e lo sviluppo di questi tool hanno dei costi.<br>Per favore, disattiva il tuo AdBlocker per <b>repanzatools.eu</b> per continuare a usare i calcolatori gratuitamente. Te ne saremo grati!</p>
-            <button class="adblock-btn" onclick="location.reload()" data-lang="adblock_btn">Ho disattivato l'AdBlock, ricarica!</button>
-        </div>
-    </div>
-
-    <div class="ad-banner banner-ad pub_300x250 pub_728x90" id="ad-bait" style="position: absolute; left: -9999px; height: 1px; width: 1px;"></div>
-
     <div class="custom-lang-selector">
         <button class="lang-toggle" onclick="toggleLangMenu()">
             <span id="current-flag" class="fi fi-it" style="font-size: 20px; border-radius: 3px;"></span> 
@@ -92,10 +70,6 @@
                     </button>
                 </div>
             </header>
-
-            <div class="ad-container-reserved" style="margin-bottom: 30px;">
-                <div id="ad-slot-top"></div>
-            </div>
 
             <div class="grid">
                 <a href="/taverna/" class="tool-card">
@@ -155,11 +129,6 @@
                 </a>
             </div>
             
-            <div class="ad-native-reserved">
-                <script async="async" data-cfasync="false" src="https://pl28867457.effectivegatecpm.com/26d240728a7014ac63fa2ff08bdedae4/invoke.js"></script>
-                <div id="container-26d240728a7014ac63fa2ff08bdedae4"></div>
-            </div>
-
         </div>
 
         <div class="footer-links">
@@ -230,74 +199,6 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const hasUsedTrial = localStorage.getItem('trial_used');
-            const isVip = localStorage.getItem('is_repanza_vip_permanent');
-            const bannerDismissed = localStorage.getItem('repanza_welcome_dismissed');
-            
-            if (!hasUsedTrial && !isVip && !bannerDismissed) {
-                setTimeout(() => {
-                    const banner = document.getElementById('welcome-banner');
-                    if (banner) banner.style.display = 'block';
-                }, 1000);
-            }
-        });
-
-        async function copiaCodice() {
-            const magicCode = "BENVENUTO7"; 
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(magicCode);
-                    successoCopy();
-                } else {
-                    fallbackCopy(magicCode);
-                }
-            } catch (err) {
-                console.error('Impossibile copiare il codice:', err);
-                fallbackCopy(magicCode);
-            }
-        }
-        
-        function successoCopy() {
-            const btn = document.getElementById('btn-copy-code');
-            if (!btn) return;
-            const l = localStorage.getItem('lingua_scelta') || 'it';
-            const testoCopiato = (typeof translations !== 'undefined' && translations[l] && translations[l].btn_copied) 
-                                 ? translations[l].btn_copied 
-                                 : "COPIATO! ✅";
-            
-            btn.innerText = testoCopiato;
-            btn.style.background = "#34d399";
-            btn.style.color = "#000";
-            
-            localStorage.setItem('repanza_welcome_dismissed', 'true');
-            setTimeout(() => { chiudiBannerBenvenuto(true); }, 2000);
-        }
-
-        function fallbackCopy(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.top = "-9999px";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) successoCopy();
-            } catch (err) { console.error('Errore nel fallback:', err); }
-            document.body.removeChild(textArea);
-        }
-
-        function chiudiBannerBenvenuto(isFromCopy = false) {
-            if (!isFromCopy) localStorage.setItem('repanza_welcome_dismissed', 'true');
-            const banner = document.getElementById('welcome-banner');
-            if (banner) banner.style.display = 'none';
-        }
-    </script>
-
-    <script>
         function toggleLangMenu() {
             document.getElementById("lang-dropdown-menu").classList.toggle("show");
         }
@@ -319,22 +220,6 @@
                 }
             }
         }
-    </script>
-
-    <script type="module">
-        import myAdsManager from '/ads-manager.js';
-        myAdsManager.initGlobalAds();
-        myAdsManager.loadIframeBanner('728x90', 'ad-slot-top');
-    </script>
-
-    <script>
-        setTimeout(function() {
-            var bait = document.getElementById('ad-bait');
-            if (!bait || bait.offsetHeight === 0 || window.getComputedStyle(bait).display === 'none') {
-                document.getElementById('adblock-overlay').style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
-        }, 1000);
     </script>
 
 </body>
