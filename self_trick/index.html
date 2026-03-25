@@ -21,6 +21,11 @@
   <meta property="og:url" content="https://re-panza.github.io/lord-knighttools/self_trick/">
   <meta property="og:type" content="website">
 
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Self Trick | L&K Tools Hub">
+  <meta name="twitter:description" content="Calcola i tempi perfetti per coprire i tuoi turni difensivi.">
+  <meta name="twitter:image" content="https://re-panza.github.io/lord-knighttools/re-panza-intro.png">
+
   <script src="/lord-knighttools/version.js"></script>
   <script>
     if (typeof APP_VERSION !== 'undefined') {
@@ -360,7 +365,7 @@
       renderList();
     }
 
-    // --- MOTORE MATEMATICO ALLA CIECA CHE CALCOLA DISTANZE VALIDE ---
+    // === IL MOTORE MATEMATICO EXACT MATCH (LIMITATO A 250 CAMPI) ===
     function forceRecalcTargets() {
       rows.forEach(r => { if (r.type === 'wave') { r.target = null; } });
       let troopKey = document.getElementById('selBattleTroop').value;
@@ -379,22 +384,47 @@
       let rStart = turnEndTime.getTime() - (maxOff * 60000);
       let rEnd = turnEndTime.getTime() - (minOff * 60000);
       
+      let turnStartTime = turnEndTime.getTime() - 600000;
+      if (rStart < turnStartTime) rStart = turnStartTime; // Sicurezza impatto
+      
       let chk = document.getElementById('chkDelay');
       let isDelayEnabled = chk ? chk.checked : false;
-      let delay_factor = isDelayEnabled ? 0.05 : 0.0;
-      
-      let turnStartTime = turnEndTime.getTime() - 600000;
       let now = Date.now();
-      let referenceTime = Math.max(now, turnStartTime);
       
-      // Calcoliamo i campi esatti per far cadere l'orario di partenza esattamente adesso (o inizio turno)
-      let targetTripSlow = rStart - referenceTime;
-      let D = Math.floor(targetTripSlow / (speed * 1000 * (2 + delay_factor)));
+      let best = null; 
+      let minWait = Infinity;
+
+      // Simuliamo la ricerca distanze come nel vecchio codice (da 1 a 250 campi massimo)
+      for (let D = 1; D <= 250; D++) {
+        let baseOneWay = D * speed * 1000;
+        let maxOneWay = isDelayEnabled ? baseOneWay * 1.05 : baseOneWay;
+        let tripFast = baseOneWay * 2;
+        let tripSlow = baseOneWay + maxOneWay;
+
+        let lStart_Strict = rStart - tripSlow;
+        let lEnd_Strict = rEnd - tripFast;
+
+        // Se l'orario di partenza valido è già passato per questa distanza, ignorala
+        if (now > lEnd_Strict) continue;
+
+        let wait = Math.max(0, lStart_Strict - now);
+
+        if (wait < minWait) {
+          minWait = wait;
+          best = { dist: D, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict };
+        } else if (wait === minWait) {
+          // A parità di attesa (es. wait=0), scegliamo quella che ci dà una finestra di lancio più ampia
+          if (best && lEnd_Strict > best.lEnd_Strict) {
+            best = { dist: D, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict };
+          }
+        }
+      }
       
-      if (D < 1) D = 1; // Non possiamo viaggiare meno di 1 campo
+      if (!best) return null;
       
       let cx = myCastle.x;
       let cy = myCastle.y;
+      let D = best.dist;
       
       // Generiamo i 5 link esatti a questa distanza
       let points = [
@@ -404,18 +434,9 @@
           { x: cx, y: cy - D },
           { x: cx + Math.round(D * 0.7), y: cy + Math.round(D * 0.7) }
       ];
-      points = points.map(p => ({ x: Math.max(0, p.x), y: Math.max(0, p.y) }));
+      best.points = points.map(p => ({ x: Math.max(0, p.x), y: Math.max(0, p.y) }));
       
-      // Matematica esatta dei tempi per determinare lStart e lEnd
-      let baseOneWay = D * speed * 1000;
-      let maxOneWay = isDelayEnabled ? baseOneWay * 1.05 : baseOneWay;
-      let tripFast = baseOneWay * 2;
-      let tripSlow = baseOneWay + maxOneWay;
-      
-      let lStart_Strict = rStart - tripSlow;
-      let lEnd_Strict = rEnd - tripFast;
-      
-      return { dist: D, points: points, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict };
+      return best;
     }
 
 
@@ -540,24 +561,30 @@
 
           let linksHtml = `
               <div class="info-sub" style="margin-bottom: 12px; text-align:left;">
-                  <span class="bounce-hl">Impatto: ${bStr}</span><br>
-                  Campi di distanza: <b>${dist}</b><br>
+                  <span class="bounce-hl">Rimbalzo: ${bStr}</span><br>
+                  Distanza: <b>${dist}</b> campi<br>
                   ${delayHtml}
               </div>
-              <div class="target-grid">
           `;
 
-          points.forEach((p, idx) => {
-              let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
-              linksHtml += `
-                  <div class="target-row-generated">
-                      <a href="${url}" class="link-text">${url}</a>
-                      <a href="${url}" class="lnk-btn-launch" onclick="event.stopPropagation();">LANCIA</a>
-                  </div>
-              `;
-          });
+          // I link compaiono SOLO SE È PRONTO per evitare false partenze
+          if (isValidNow) {
+              linksHtml += `<div class="target-grid">`;
+              points.forEach((p, idx) => {
+                  let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
+                  linksHtml += `
+                      <div class="target-row-generated">
+                          <a href="${url}" class="link-text">${url}</a>
+                          <a href="${url}" class="lnk-btn-launch" onclick="event.stopPropagation();">LANCIA</a>
+                      </div>
+                  `;
+              });
+              linksHtml += `</div>`;
+          } else {
+              linksHtml += `<div style="text-align:center; padding:15px; color:var(--danger); font-style:italic; font-weight:bold;">I link compariranno qui quando il timer sarà scaduto.</div>`;
+          }
           
-          linksHtml += `</div><div class="btn-copri" style="margin-top:15px;" onclick="event.stopPropagation(); covRow(${i})">SEGNA COME COPERTO</div>`;
+          linksHtml += `<div class="btn-copri" style="margin-top:15px;" onclick="event.stopPropagation(); covRow(${i})">SEGNA COME COPERTO</div>`;
           bodyDiv.innerHTML = linksHtml;
       } else {
           bodyDiv.className = "st-body";
