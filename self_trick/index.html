@@ -21,11 +21,6 @@
   <meta property="og:url" content="https://re-panza.github.io/lord-knighttools/self_trick/">
   <meta property="og:type" content="website">
 
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Self Trick | L&K Tools Hub">
-  <meta name="twitter:description" content="Calcola i tempi perfetti per coprire i tuoi turni difensivi.">
-  <meta name="twitter:image" content="https://re-panza.github.io/lord-knighttools/re-panza-intro.png">
-
   <script src="/lord-knighttools/version.js"></script>
   <script>
     if (typeof APP_VERSION !== 'undefined') {
@@ -36,7 +31,6 @@
   
   <link rel="stylesheet" href="/lord-knighttools/common.css">
   <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
@@ -181,7 +175,6 @@
   </div>
 
   <script>
-    // PERMESSI ASSOLUTI AL BROWSER
     if (typeof window.parseLK === 'undefined') {
         window.parseLK = function(val) {
             let m = val.match(/x=([0-9]+).*?y=([0-9]+)/i) || val.match(/([0-9]+),([0-9]+)/);
@@ -322,7 +315,10 @@
     }
 
     function forceRecalc() {
-      if (rows.length > 0) renderList();
+      if (rows.length > 0) {
+        forceRecalcTargets();
+        renderList();
+      }
     }
 
     function startCalc() {
@@ -354,51 +350,76 @@
       let step = 2; 
       while (available >= batch && step < 50) {
         let turnEndTime = new Date(startT.getTime() + (step * 600000));
-        rows.push({ t: turnEndTime, type: 'wave', turnNum: step, covered: false, open: false });
+        rows.push({ t: turnEndTime, type: 'wave', turnNum: step, target: null, covered: false, open: false });
         available -= batch; step++;
       }
 
+      forceRecalcTargets();
       if (ticker) clearInterval(ticker);
       ticker = setInterval(loop, 1000);
       renderList();
     }
 
-    // --- IL MOTORE ALLA CIECA (NESSUN DATABASE) ---
-    function generateBlindTargets(turnEndTime, speed) {
-        let now = Date.now();
-        let minOff = parseInt(document.getElementById('selBounceMin').value || "3");
-        let maxOff = parseInt(document.getElementById('selBounceMax').value || "6");
-        let rStart = turnEndTime.getTime() - (maxOff * 60000);
-        let rEnd = turnEndTime.getTime() - (minOff * 60000);
-
-        let targetReturn = (rStart + rEnd) / 2;
-        
-        let isDelayEnabled = document.getElementById('chkDelay').checked;
-        let delayMultiplier = isDelayEnabled ? 1.05 : 1.0; 
-        
-        let travelTime = (targetReturn - now) / (1 + delayMultiplier); 
-        let dist = Math.round(travelTime / (speed * 1000));
-        
-        let minTravel = rStart - now;
-        if (minTravel < 0) return null; 
-        if (dist < 1) return null; 
-
-        let cx = myCastle.x;
-        let cy = myCastle.y;
-        
-        let points = [
-            { x: cx + dist, y: cy },
-            { x: cx - dist, y: cy },
-            { x: cx, y: cy + dist },
-            { x: cx, y: cy - dist },
-            { x: cx + Math.round(dist * 0.7), y: cy + Math.round(dist * 0.7) }
-        ];
-        
-        points = points.map(p => ({ x: Math.max(0, p.x), y: Math.max(0, p.y) }));
-        return { dist: dist, points: points };
+    // --- MOTORE MATEMATICO ALLA CIECA CHE CALCOLA DISTANZE VALIDE ---
+    function forceRecalcTargets() {
+      rows.forEach(r => { if (r.type === 'wave') { r.target = null; } });
+      let troopKey = document.getElementById('selBattleTroop').value;
+      let speed = getSpeed(troopKey);
+      
+      rows.forEach(r => { 
+          if (r.type === 'wave' && !r.covered) { 
+              r.target = findTarget(r.t, speed, r.turnNum); 
+          } 
+      });
     }
 
-    // --- COSTRUZIONE DELLA GRAFICA ORIGINALE ---
+    function findTarget(turnEndTime, speed, turnNum) {
+      let minOff = parseInt(document.getElementById('selBounceMin').value || "3");
+      let maxOff = parseInt(document.getElementById('selBounceMax').value || "6");
+      let rStart = turnEndTime.getTime() - (maxOff * 60000);
+      let rEnd = turnEndTime.getTime() - (minOff * 60000);
+      
+      let chk = document.getElementById('chkDelay');
+      let isDelayEnabled = chk ? chk.checked : false;
+      let delay_factor = isDelayEnabled ? 0.05 : 0.0;
+      
+      let turnStartTime = turnEndTime.getTime() - 600000;
+      let now = Date.now();
+      let referenceTime = Math.max(now, turnStartTime);
+      
+      // Calcoliamo i campi esatti per far cadere l'orario di partenza esattamente adesso (o inizio turno)
+      let targetTripSlow = rStart - referenceTime;
+      let D = Math.floor(targetTripSlow / (speed * 1000 * (2 + delay_factor)));
+      
+      if (D < 1) D = 1; // Non possiamo viaggiare meno di 1 campo
+      
+      let cx = myCastle.x;
+      let cy = myCastle.y;
+      
+      // Generiamo i 5 link esatti a questa distanza
+      let points = [
+          { x: cx + D, y: cy },
+          { x: cx - D, y: cy },
+          { x: cx, y: cy + D },
+          { x: cx, y: cy - D },
+          { x: cx + Math.round(D * 0.7), y: cy + Math.round(D * 0.7) }
+      ];
+      points = points.map(p => ({ x: Math.max(0, p.x), y: Math.max(0, p.y) }));
+      
+      // Matematica esatta dei tempi per determinare lStart e lEnd
+      let baseOneWay = D * speed * 1000;
+      let maxOneWay = isDelayEnabled ? baseOneWay * 1.05 : baseOneWay;
+      let tripFast = baseOneWay * 2;
+      let tripSlow = baseOneWay + maxOneWay;
+      
+      let lStart_Strict = rStart - tripSlow;
+      let lEnd_Strict = rEnd - tripFast;
+      
+      return { dist: D, points: points, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict };
+    }
+
+
+    // --- COSTRUZIONE DELLA GRAFICA DELLA GRIGLIA ---
     function renderList() {
       let el = document.getElementById('resList'); if(!el) return;
       
@@ -407,7 +428,7 @@
       let linkUrl = `l+k://coordinates?${myCastle.x},${myCastle.y}&${worldId}`;
       let pD = (n) => String(n).padStart(2, '0');
       
-      document.getElementById('resHeaderInfo').innerHTML = `<b>⚔️ Tuo Castello</b><a href="${linkUrl}">${linkUrl}</a><span style="font-size:12px;color:#aaa;display:block;margin-top:4px;">Inizio: ${pD(startT.getDate())}/${pD(startT.getMonth() + 1)} ${pD(startT.getHours())}:${pD(startT.getMinutes())}</span>`;
+      document.getElementById('resHeaderInfo').innerHTML = `<b>⚔️ Tuo Castello</b><br><a href="${linkUrl}">${linkUrl}</a><span style="font-size:12px;color:#aaa;display:block;margin-top:4px;">Inizio: ${pD(startT.getDate())}/${pD(startT.getMonth() + 1)} ${pD(startT.getHours())}:${pD(startT.getMinutes())}</span>`;
 
       el.innerHTML = "";
       rows.forEach((r, i) => {
@@ -419,13 +440,15 @@
         divRow.className = "res-row" + (r.covered ? " covered" : "");
         divRow.id = `row_${i}`;
         
-        if (!isGarrison) { divRow.onclick = () => toggleAccordion(i); }
+        if (!isGarrison) {
+            divRow.onclick = () => toggleAccordion(i);
+        }
 
         if (isGarrison) {
-            divRow.innerHTML = `${colTime}<div class="col-info" style="color:var(--green);font-weight:bold;font-size:14px;">Guarnigione fissa</div><div class="col-action"></div>`;
+            divRow.innerHTML = `${colTime}<div class="col-info" style="color:var(--green);font-weight:bold; font-size:14px;">Guarnigione fissa</div><div class="col-action"></div>`;
             el.appendChild(divRow);
         } else {
-            // LA TUA GRIGLIA ESATTA
+            // LA STRUTTURA A GRIGLIA PERFETTA
             divRow.innerHTML = `
                 ${colTime}
                 <div class="col-info" id="info_${i}"><div class="info-status st-wait">Calcolo...</div></div>
@@ -433,92 +456,98 @@
             `;
             el.appendChild(divRow);
 
-            // IL CORPO DELLA TENDINA (INIZIALMENTE NASCOSTO)
+            // CORPO DELLA TENDINA
             let bodyDiv = document.createElement('div');
             bodyDiv.id = `body_${i}`;
-            bodyDiv.className = "st-body";
+            bodyDiv.className = r.open && !r.covered ? "st-body open" : "st-body";
             el.appendChild(bodyDiv);
 
-            updateRowData(i, true);
+            updateRowData(i);
         }
       });
     }
 
     function loop() {
       rows.forEach((r, i) => {
-        if (r.type !== 'garrison') updateRowData(i, false);
+        if (r.type !== 'garrison') updateRowData(i);
       });
     }
 
-    function updateRowData(i, forceRenderBody) {
+    function updateRowData(i) {
       let r = rows[i];
       let infoDiv = document.getElementById(`info_${i}`);
       let actDiv = document.getElementById(`act_${i}`);
       let bodyDiv = document.getElementById(`body_${i}`);
       if (!infoDiv || !actDiv || !bodyDiv) return;
 
-      // SE È COPERTO (IL TUO BOTTONE ORIGINALE)
       if (r.covered) {
-          infoDiv.innerHTML = `<div class="info-status st-covered-text">COPERTO</div>`;
+          infoDiv.innerHTML = `<span class="st-covered-text">COPERTO</span>`;
           actDiv.innerHTML = `<div class="btn-scopri" onclick="event.stopPropagation(); uncovRow(${i})">SCOPRI</div>`;
           bodyDiv.className = "st-body"; 
           return;
       }
 
-      let speed = getSpeed(document.getElementById('selBattleTroop').value);
-      let targetData = generateBlindTargets(r.t, speed);
-
-      // SE NON C'È PIÙ TEMPO
-      if (!targetData) {
+      if (!r.target) {
           infoDiv.innerHTML = `<div class="info-status st-wait">SCADUTO</div>`;
           actDiv.innerHTML = ``;
           bodyDiv.className = "st-body";
           return;
       }
 
-      // SE C'È TEMPO (PRONTO!)
-      infoDiv.innerHTML = `<div class="info-status st-now">PRONTO</div>`;
-      actDiv.innerHTML = `<span style="color:#aaa; font-size:16px; font-weight:bold; cursor:pointer;">${r.open ? '▲' : '▼'}</span>`;
+      let { dist, points, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict } = r.target;
+      let now = Date.now();
+      let isValidNow = (now >= lStart_Strict && now <= lEnd_Strict);
+      
+      let reqMinImpact = rStart - baseOneWay; 
+      let reqMaxImpact = rEnd - baseOneWay;
+      let d1 = new Date(reqMinImpact); let d2 = new Date(reqMaxImpact);
+      let pD = (n) => String(n).padStart(2, '0');
+      let bStr = `${pD(d1.getHours())}:${pD(d1.getMinutes())}:${pD(d1.getSeconds())} - ${pD(d2.getHours())}:${pD(d2.getMinutes())}:${pD(d2.getSeconds())}`;
 
-      // SE LA TENDINA È APERTA CALCOLA LA DISTANZA E MOSTRA I 5 LINK
-      if (r.open) {
+      let chk = document.getElementById('chkDelay');
+      let isDelayEnabledGlobal = chk ? chk.checked : false;
+      let isDelayNeeded = (now + baseOneWay) < reqMinImpact; 
+
+      let delayHtml = "";
+      if (isDelayEnabledGlobal && isDelayNeeded) {
+        if (isValidNow) { delayHtml = `<span style="color:var(--gold); font-weight:bold">Ritardo Dinamico Applicato</span>`; } 
+        else { delayHtml = `<span style="color:var(--muted); font-weight:bold">Ritardo verrà calcolato</span>`; }
+      } else {
+        delayHtml = `<span style="color:var(--accent); font-weight:bold">Nessun Ritardo</span>`;
+      }
+
+      let wait = lStart_Strict - now;
+
+      // --- AGGIORNAMENTO VISIVO IN BASE AL TEMPO (COME L'ORIGINALE) ---
+      if (wait > 0) {
+        let m = Math.floor((wait % 3600000) / 60000);
+        let s = Math.floor((wait % 60000) / 1000);
+        infoDiv.innerHTML = `<div class="info-status st-wait">In attesa... ${m}m ${s}s</div>`;
+        actDiv.innerHTML = `<span style="color:#aaa; font-size:16px; font-weight:bold; cursor:pointer;">${r.open ? '▲' : '▼'}</span>`;
+      } else if (isValidNow) {
+        infoDiv.innerHTML = `<div class="info-status st-now">PRONTO</div>`;
+        actDiv.innerHTML = `<span style="color:#aaa; font-size:16px; font-weight:bold; cursor:pointer;">${r.open ? '▲' : '▼'}</span>`;
+      } else {
+        // Scaduto, ricalcoliamo o eliminiamo
+        r.target = null;
+        infoDiv.innerHTML = `<div class="info-status st-wait">SCADUTO</div>`;
+        actDiv.innerHTML = ``;
+      }
+
+      // --- RENDERING TENDINA CON I DATI DEL TARGET ---
+      if (r.open && r.target) {
           bodyDiv.className = "st-body open";
-          
-          let now = Date.now();
-          let baseOneWay = targetData.dist * speed * 1000;
-          let isDelayEnabledGlobal = document.getElementById('chkDelay').checked;
-          
-          let minOff = parseInt(document.getElementById('selBounceMin').value || "3");
-          let maxOff = parseInt(document.getElementById('selBounceMax').value || "6");
-          let rStart = r.t.getTime() - (maxOff * 60000);
-          let rEnd = r.t.getTime() - (minOff * 60000);
 
-          let impactStart = new Date(rStart - baseOneWay);
-          let impactEnd = new Date(rEnd - baseOneWay);
-          let pD = (n) => String(n).padStart(2, '0');
-          let bStr = `${pD(impactStart.getHours())}:${pD(impactStart.getMinutes())}:${pD(impactStart.getSeconds())} - ${pD(impactEnd.getHours())}:${pD(impactEnd.getMinutes())}:${pD(impactEnd.getSeconds())}`;
-
-          let reqMinImpact = rStart - baseOneWay;
-          let isDelayNeeded = (now + baseOneWay) < reqMinImpact; 
-          let delayHtml = "";
-          if (isDelayEnabledGlobal && isDelayNeeded) {
-              delayHtml = `<br><span style="color:var(--gold); font-weight:bold">Ritardo Dinamico Applicato</span>`;
-          } else {
-              delayHtml = `<br><span style="color:var(--accent); font-weight:bold">Nessun Ritardo Necessario</span>`;
-          }
-
-          // I TUOI TESTI PRECISI
           let linksHtml = `
               <div class="info-sub" style="margin-bottom: 12px; text-align:left;">
                   <span class="bounce-hl">Impatto: ${bStr}</span><br>
-                  Distanza: <b>${targetData.dist}</b> campi
+                  Campi di distanza: <b>${dist}</b><br>
                   ${delayHtml}
               </div>
               <div class="target-grid">
           `;
 
-          // I 5 LINK (SPOSTATI A DESTRA)
-          targetData.points.forEach((p, idx) => {
+          points.forEach((p, idx) => {
               let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
               linksHtml += `
                   <div class="target-row-generated">
