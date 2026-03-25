@@ -71,63 +71,13 @@
     select option { background-color: #ffffff; color: #000000; }
     input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(96, 165, 250, .20); }
 
-    .habitat-selector { display: flex; gap: 8px; margin-bottom: 16px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 12px; border: 1px solid var(--border); }
-    .hab-opt { flex: 1; text-align: center; }
-    .hab-opt input { display: none; }
-    .hab-opt span { display: block; padding: 8px 0; font-size: 12px; font-weight: bold; color: var(--muted); cursor: pointer; border-radius: 8px; transition: 0.2s; }
-    .hab-opt input:checked+span { background: rgba(96, 165, 250, .15); color: #fff; border: 1px solid var(--accent); }
-
-    .bonus-area { background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); display: none; }
-    .bonus-area.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
     .chk-label { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text); cursor: pointer; }
     .chk-label input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); }
-
-    .section-separator { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-    .sec-title { color: var(--gold); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; display: block; }
-    
-    .bounce-window-config { background: rgba(96, 165, 250, 0.05); padding: 10px; border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.2); margin-bottom: 12px; position: relative; }
 
     .btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, .5); background: rgba(251, 191, 36, .15); color: var(--gold); font-weight: 700; text-transform: uppercase; font-size: 15px; cursor: pointer; margin-top: 8px; transition: 0.2s; }
     .btn:active { background: rgba(251, 191, 36, .3); }
     .hidden { display: none !important; }
 
-    .res-header-info { text-align: center; font-size: 14px; color: var(--muted); padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 12px 12px 0 0; border: 1px solid var(--border); border-bottom: none; }
-    .res-header-info a { color: var(--accent); text-decoration: none; font-weight: bold; font-family: monospace; display: block; margin: 4px 0; word-break: break-all; font-size: 12px; }
-    .res-header-info b { color: #fff; font-size: 15px; }
-
-    .quick-bar { background: var(--card-solid); padding: 10px; border: 1px solid var(--border); border-top: none; display: flex; gap: 10px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
-    .back-btn { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid var(--border); padding: 0 16px; font-weight: bold; border-radius: 8px; font-size: 18px; cursor: pointer; }
-
-    #resList { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-top: none; border-radius: 0 0 16px 16px; overflow: hidden; }
-    
-    /* MODIFICA PER ACCORDION: Manteniamo la struttura visiva del tuo res-row */
-    .res-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); background: transparent; transition: background 0.2s; cursor: pointer; }
-    .res-row:last-child { border-bottom: none; }
-    .res-row:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
-    .res-row:hover { background: rgba(255, 255, 255, 0.05); }
-    .res-row.covered { background: rgba(52, 211, 153, 0.15) !important; border-left: 3px solid var(--green); }
-
-    .col-time { text-align: center; border-right: 1px solid var(--border); padding-right: 15px; min-width: 60px; }
-    .t-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
-    .t-val { font-size: 16px; color: #fff; font-weight: 700; }
-    
-    .col-info { flex: 1; padding-left: 15px; text-align: right; }
-    .info-status { font-size: 14px; font-weight: bold; margin-bottom: 3px; }
-    
-    .col-action { display: flex; align-items: center; justify-content: center; padding-left: 15px; }
-
-    .btn-copri { display: flex; align-items: center; justify-content: center; width: 100%; height: 32px; background: rgba(52, 211, 153, 0.15); border: 1px solid var(--green); color: var(--green); font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
-    .btn-copri:active { background: var(--green); color: #000; }
-    .btn-scopri { display: flex; align-items: center; justify-content: center; padding: 0 15px; height: 32px; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin-left:10px; }
-    .btn-scopri:active { background: var(--danger); color: #fff; }
-
-    .st-now { color: var(--green); animation: pulse 1s infinite; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
-    .st-wait { color: var(--danger); font-weight: bold; }
-    .st-covered-text { color: var(--green); font-weight: bold; }
-    @keyframes pulse { 50% { opacity: 0.6; } }
-    
     .container-wide { max-width: 980px; margin: 0 auto; }
 
     #tour-st-1, #tour-st-2, #tour-st-3, #tour-st-5, #tour-st-6, #tour-st-4 {
@@ -137,7 +87,6 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 15px;
     }
-
   </style>
 
 </head>
@@ -175,7 +124,7 @@
     <div id="tour-st-3" style="margin-bottom: 0;">
       <label>Habitat Partenza</label>
       <div class="habitat-selector">
-        <label class="hab-opt"><input type="radio" name="hab" value="castello" checked onchange="updateUI()"><span >Castello</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="castello" checked onchange="updateUI()"><span>Castello</span></label>
         <label class="hab-opt"><input type="radio" name="hab" value="fortezza" onchange="updateUI()"><span>Fortezza</span></label>
         <label class="hab-opt"><input type="radio" name="hab" value="citta" onchange="updateUI()"><span>Città</span></label>
         <label class="hab-opt"><input type="radio" name="hab" value="metropoli" onchange="updateUI()"><span>Metropoli</span></label>
@@ -283,7 +232,6 @@
   </div>
 
   <script>
-    // Finto parser in caso common.js non fosse caricato in tempo
     if (typeof window.parseLK === 'undefined') {
         window.parseLK = function(val) {
             let m = val.match(/x=([0-9]+).*?y=([0-9]+)/i) || val.match(/([0-9]+),([0-9]+)/);
@@ -456,7 +404,7 @@
       let step = 2; 
       while (available >= batch && step < 50) {
         let turnEndTime = new Date(startT.getTime() + (step * 600000));
-        rows.push({ t: turnEndTime, type: 'wave', turnNum: step, covered: false, open: false, lastDist: -1 });
+        rows.push({ t: turnEndTime, type: 'wave', turnNum: step, covered: false, open: false });
         available -= batch; step++;
       }
 
@@ -481,7 +429,9 @@
         let travelTime = (targetReturn - now) / (1 + delayMultiplier); 
         let dist = Math.round(travelTime / (speed * 1000));
         
-        if (dist < 1) return null; // Scaduto!
+        let minTravel = rStart - now;
+        if (minTravel < 0) return null; 
+        if (dist < 1) return null; 
 
         let cx = myCastle.x;
         let cy = myCastle.y;
@@ -510,34 +460,30 @@
 
       el.innerHTML = "";
       rows.forEach((r, i) => {
-        let div = document.createElement('div');
+        let isGarrison = r.type === 'garrison';
         let label = `Turno ${r.turnNum}`;
-        let timeStr = `${pD(r.t.getHours())}:${pD(r.t.getMinutes())}`;
+        let colTime = `<div class="col-time"><div class="t-label">${label}</div><div class="t-val">${pD(r.t.getHours())}:${pD(r.t.getMinutes())}</div></div>`;
 
-        if (r.type === 'garrison') {
-            div.className = "res-row covered";
-            div.innerHTML = `
-                <div class="col-time"><div class="t-label">${label}</div><div class="t-val">${timeStr}</div></div>
-                <div class="col-info"><span class="st-covered-text">Guarnigione fissa</span></div>
-                <div class="col-action"></div>
-            `;
+        let divRow = document.createElement('div');
+        divRow.className = "res-row" + (r.covered ? " covered" : "");
+        divRow.id = `row_${i}`;
+        
+        if (!isGarrison) {
+            divRow.onclick = () => toggleAccordion(i);
+        }
+
+        if (isGarrison) {
+            divRow.innerHTML = `${colTime}<div class="col-info" style="color:var(--green);font-weight:bold;">Guarnigione fissa</div><div class="col-action"></div>`;
+            el.appendChild(divRow);
         } else {
-            div.className = "res-row" + (r.covered ? " covered" : "");
-            div.onclick = () => toggleAccordion(i);
-            
-            div.innerHTML = `
-                <div class="col-time"><div class="t-label">${label}</div><div class="t-val">${timeStr}</div></div>
-                <div class="col-info" id="status_${i}">Calcolo...</div>
-                <div class="col-action"><span style="color:#aaa;">${r.open ? '▲' : '▼'}</span></div>
-            `;
-            
+            divRow.innerHTML = `${colTime}<div class="col-info" id="info_${i}"></div><div class="col-action" id="act_${i}"></div>`;
+            el.appendChild(divRow);
+
             let bodyDiv = document.createElement('div');
-            bodyDiv.className = "st-body";
             bodyDiv.id = `body_${i}`;
-            bodyDiv.style.display = r.open && !r.covered ? 'block' : 'none';
-            
-            el.appendChild(div);
+            bodyDiv.className = "st-body";
             el.appendChild(bodyDiv);
+
             updateRowData(i, true);
         }
       });
@@ -551,16 +497,15 @@
 
     function updateRowData(i, forceRenderBody) {
       let r = rows[i];
-      let statusDiv = document.getElementById(`status_${i}`);
+      let infoDiv = document.getElementById(`info_${i}`);
+      let actDiv = document.getElementById(`act_${i}`);
       let bodyDiv = document.getElementById(`body_${i}`);
-      if (!statusDiv || !bodyDiv) return;
+      if (!infoDiv || !actDiv || !bodyDiv) return;
 
       if (r.covered) {
-          statusDiv.innerHTML = `<span class="st-covered-text">COPERTO</span>`;
-          bodyDiv.style.display = 'none';
-          
-          let actionCol = statusDiv.nextElementSibling;
-          actionCol.innerHTML = `<button class="btn-scopri" onclick="event.stopPropagation(); uncovRow(${i})">SCOPRI</button>`;
+          infoDiv.innerHTML = `<span class="st-covered-text">COPERTO</span>`;
+          actDiv.innerHTML = `<div class="btn-scopri" onclick="event.stopPropagation(); uncovRow(${i})">SCOPRI</div>`;
+          bodyDiv.className = "st-body"; 
           return;
       }
 
@@ -568,30 +513,64 @@
       let targetData = generateBlindTargets(r.t, speed);
 
       if (!targetData) {
-          statusDiv.innerHTML = `<span class="st-wait">SCADUTO</span>`;
-          bodyDiv.innerHTML = `<div style="text-align:center; padding:10px; color:var(--danger);">Non c'è più tempo per questo turno.</div>`;
+          infoDiv.innerHTML = `<div class="info-status st-wait">SCADUTO</div>`;
+          actDiv.innerHTML = ``;
+          bodyDiv.className = "st-body";
           return;
       }
 
-      statusDiv.innerHTML = `<span class="st-now">PRONTO</span>`;
-      let actionCol = statusDiv.nextElementSibling;
-      actionCol.innerHTML = `<span style="color:#aaa;">${r.open ? '▲' : '▼'}</span>`;
+      infoDiv.innerHTML = `<div class="info-status st-now">PRONTO</div>`;
+      actDiv.innerHTML = `<span style="color:#aaa; font-size:16px; font-weight:bold; cursor:pointer;">${r.open ? '▲' : '▼'}</span>`;
 
-      if (forceRenderBody || r.lastDist !== targetData.dist) {
-          r.lastDist = targetData.dist;
+      if (r.open) {
+          bodyDiv.className = "st-body open";
           
-          let linksHtml = `<div style="font-size:12px; color:var(--muted); margin-bottom:10px; text-align:right;">Distanza calcolata: <b>${targetData.dist}</b> campi</div>`;
-          linksHtml += `<div class="target-grid">`;
+          let now = Date.now();
+          let baseOneWay = targetData.dist * speed * 1000;
+          let isDelayEnabledGlobal = document.getElementById('chkDelay').checked;
           
+          let minOff = parseInt(document.getElementById('selBounceMin').value || "3");
+          let maxOff = parseInt(document.getElementById('selBounceMax').value || "6");
+          let rStart = r.t.getTime() - (maxOff * 60000);
+          let rEnd = r.t.getTime() - (minOff * 60000);
+
+          let impactStart = new Date(rStart - baseOneWay);
+          let impactEnd = new Date(rEnd - baseOneWay);
+          let pD = (n) => String(n).padStart(2, '0');
+          let bStr = `${pD(impactStart.getHours())}:${pD(impactStart.getMinutes())}:${pD(impactStart.getSeconds())} - ${pD(impactEnd.getHours())}:${pD(impactEnd.getMinutes())}:${pD(impactEnd.getSeconds())}`;
+
+          let reqMinImpact = rStart - baseOneWay;
+          let isDelayNeeded = (now + baseOneWay) < reqMinImpact; 
+          let delayHtml = "";
+          if (isDelayEnabledGlobal && isDelayNeeded) {
+              delayHtml = `<span style="color:var(--gold); font-weight:bold">Ritardo Dinamico Applicato</span>`;
+          } else {
+              delayHtml = `<span style="color:var(--accent); font-weight:bold">Nessun Ritardo Necessario</span>`;
+          }
+
+          let linksHtml = `
+              <div class="info-sub" style="margin-bottom: 12px;">
+                  <span class="bounce-hl">Impatto: ${bStr}</span><br>
+                  Distanza: <b>${targetData.dist}</b> campi<br>
+                  ${delayHtml}
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+          `;
+
           targetData.points.forEach((p, idx) => {
               let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
-              linksHtml += `<a href="${url}" class="lnk-btn-launch">Link Bersaglio ${idx + 1}</a>`;
+              linksHtml += `
+                  <div class="target-row-generated">
+                      <a href="${url}" class="link-text">${url}</a>
+                      <a href="${url}" class="lnk-btn-launch" onclick="event.stopPropagation();">LANCIA</a>
+                  </div>
+              `;
           });
           
-          linksHtml += `</div>`;
-          linksHtml += `<button class="btn-copri" style="margin-top:15px;" onclick="covRow(${i})">SEGNA COME COPERTO</button>`;
-          
+          linksHtml += `</div><div class="btn-copri" style="margin-top:15px;" onclick="event.stopPropagation(); covRow(${i})">SEGNA COME COPERTO</div>`;
           bodyDiv.innerHTML = linksHtml;
+      } else {
+          bodyDiv.className = "st-body";
       }
     }
 
