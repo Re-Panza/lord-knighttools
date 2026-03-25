@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>Self Trick Lords & Knights | Calcolatore Difesa - Re Panza</title>
+  <meta name="description" content="Calcola i tempi perfetti per il Self Trick su Lords & Knights. Salva le tue truppe coprendo i turni difensivi con precisione millimetrica.">
+  <meta name="author" content="Re Panza">
+  
+  <link rel="manifest" href="/lord-knighttools/manifest.json">
+  <link rel="apple-touch-icon" href="/lord-knighttools/icona.png">
+  
+  <script src="/lord-knighttools/version.js"></script>
+  <script>
+    var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
+    document.write('<link rel="stylesheet" href="/lord-knighttools/common.css?v=' + cacheBuster + '">');
+    document.write('<link rel="stylesheet" href="style.css?v=' + cacheBuster + '">');
+    document.write('<script src="/lord-knighttools/common.js?v=' + cacheBuster + '"><\/script>');
+    document.write('<script src="/lord-knighttools/lang.js?v=' + cacheBuster + '"><\/script>');
+  </script>
+</head>
+
+<body>
+
+  <div class="top-nav container-wide">
+    <a href="/lord-knighttools/" class="home-link" data-lang="nav_home">🏠 Torna alla Home</a>
+  </div>
+
+  <div class="page-title container-wide">
+    <h2>⚔️ <span data-lang="st_title">Self Trick</span></h2>
+  </div>
+
+  <div id="inputArea" class="card container-wide">
+    <div class="row">
+      <div class="col">
+        <label data-lang="st_label_link">🎯 Link castello attaccato</label>
+        <input type="text" id="inCoord" placeholder="l+k://coordinates?x,y&337" oninput="parseInputLink()">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col"><label data-lang="st_label_date">📅 Inizio Battaglia</label><input type="date" id="inDate"></div>
+      <div class="col"><label data-lang="st_label_time">⏱️ Ora Inizio</label><input type="time" id="inTime" step="60"></div>
+    </div>
+
+    <div id="areaBonusPaese" class="bonus-area" style="background: rgba(96, 165, 250, 0.1); border-color: var(--accent);">
+      <label style="color:var(--accent); font-weight:bold;" data-lang="st_bonus_country">Bonus Velocità Paese (Sentieri di Ghiaia)</label>
+      <select id="selCountryBonus">
+        <option value="1">Nessuno (100%)</option>
+      </select>
+    </div>
+
+    <div>
+      <label data-lang="st_hab_start">Habitat Partenza</label>
+      <div class="habitat-selector">
+        <label class="hab-opt"><input type="radio" name="hab" value="castello" checked onchange="updateUI()"><span data-lang="st_hab_castle">Castello</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="fortezza" onchange="updateUI()"><span data-lang="st_hab_fortress">Fortezza</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="citta" onchange="updateUI()"><span data-lang="st_hab_city">Città</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="metropoli" onchange="updateUI()"><span data-lang="st_hab_metro">Metropoli</span></label>
+      </div>
+
+      <div id="optCastello" class="bonus-area active">
+        <label class="chk-label"><input type="checkbox" id="chkMap"> <span data-lang="st_chk_map">Mappa dell'Area (+5%)</span></label>
+        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventCastello"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+      </div>
+      <div id="optFortezza" class="bonus-area">
+        <label class="chk-label"><input type="checkbox" id="chkBussola"> <span data-lang="st_chk_compass">Bussola (+5%)</span></label>
+        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventFortezza"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+      </div>
+      <div id="optCitta" class="bonus-area">
+        <div class="row" style="margin:0"><div class="col"><label style="color:#fff">Livello Caserma (1-30)</label><select id="selCityLvl"></select></div></div>
+        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventCitta"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+      </div>
+      <div id="optMetropoli" class="bonus-area">
+        <div class="row" style="margin:0"><div class="col"><label style="color:#fff">Livello Accademia (1-30)</label><select id="selMetropoliLvl"></select></div></div>
+        <div style="margin-top:8px"><label class="chk-label"><input type="checkbox" id="chkManovra"> <span>Manovra di fianco (+10%)</span></label></div>
+        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventMetropoli"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+      </div>
+    </div>
+
+    <div class="bounce-window-config">
+      <label style="text-transform:none; line-height:1.2; margin-bottom:8px; color:var(--text)" data-lang="st_window_title">Finestra di Rientro (Minuti prima della fine del turno)</label>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div style="flex:1"><label data-lang="st_window_from">Da (Min prima)</label><select id="selBounceMax" onchange="updateBounceLimits()"></select></div>
+        <div style="flex:1"><label data-lang="st_window_to">A (Min prima)</label><select id="selBounceMin" onchange="forceRecalc()"></select></div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col" style="flex:2"><label data-lang="st_troop">Truppa</label><select id="selTroop"></select></div>
+      <div class="col"><label data-lang="st_batch">Plotone</label><select id="selBatch"></select></div>
+    </div>
+
+    <div class="row">
+      <div style="width:100%">
+        <div style="margin-bottom:8px;">
+          <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="chkDelay" onchange="syncDelay('chkDelay')">
+            <span data-lang="st_chk_delay">⏱️ Ritardo Dinamico (0% - 5%)</span>
+          </label>
+        </div>
+        <label data-lang="st_troops_total">Truppe Totali</label>
+        <input type="number" id="inGarrison" style="text-align:center" placeholder="Es. 1000">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startCalc()" data-lang="st_calc_btn">CALCOLA</button>
+  </div> 
+  
+  <div id="resArea" class="hidden card container-wide" style="padding:0; overflow:hidden;">
+    <div id="resHeaderInfo" class="res-header-info"></div>
+
+    <div class="quick-bar">
+      <button class="back-btn" onclick="reset()">🔙</button>
+      <select id="selBattleTroop" onchange="forceRecalc()" style="margin-bottom: 0;"></select>
+      
+      <div style="display:flex; align-items:center; margin-left:auto;">
+        <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items:center; gap: 5px; cursor: pointer; font-size: 11px; padding: 4px 8px; background: rgba(251, 191, 36, 0.1); border: 1px solid var(--gold); border-radius: 6px;">
+          <input type="checkbox" id="chkDelayRes" onchange="syncDelay('chkDelayRes')">
+          <span data-lang="st_chk_delay_res">⏱️ Ritardo</span>
+        </label>
+      </div>
+    </div>
+
+    <div id="resList"></div>
+  </div>
+
+  <script>
+    function getStText(key) {
+        const l = localStorage.getItem('lingua_scelta') || 'it';
+        if (typeof window.translations !== 'undefined' && window.translations[l] && window.translations[l][key]) {
+            return window.translations[l][key];
+        }
+        return key; 
+    }
+
+    let GAME_DATA = null;
+    let myCastle = null, worldId = null; 
+    let rows = [], ticker = null;
+
+    async function loadGameData() {
+      try {
+        // Pesca le velocità direttamente dalla cartella principale
+        let response = await fetch('/lord-knighttools/database_truppe.json?v=' + Date.now());
+        if (!response.ok) throw new Error("HTTP Error");
+        const json = await response.json();
+        GAME_DATA = (json && json.game_config) ? json.game_config : json;
+        initUI();
+      } catch (e) {
+        console.error(e);
+        alert("Errore caricamento database_truppe.json: " + e.message);
+      }
+    }
+
+    const TROOPS_UI = [
+      { key: "Lanciere" }, { key: "Balestriere" }, { key: "Cav. Pesante" }, { key: "Spadaccino" },
+      { key: "Arciere" }, { key: "Cav. Leggero" }, { key: "Carro bue" }, { key: "Ashigaru" },
+      { key: "Berserker" }, { key: "Arc. Daikyu" }, { key: "Arc. Norreno" }, { key: "Cav. Ascia" }
+    ];
+
+    window.onload = () => { loadGameData(); };
+
+    function initUI() {
+      let htmlT = "";
+      TROOPS_UI.forEach(t => { htmlT += `<option value="${t.key}">${t.key}</option>`; });
+      let st = document.getElementById('selTroop'); if(st) st.innerHTML = htmlT;
+      let sbt = document.getElementById('selBattleTroop'); if(sbt) sbt.innerHTML = htmlT;
+
+      let htmlL = "";
+      for (let i = 1; i <= 30; i++) htmlL += `<option value="${i}">Livello ${i}</option>`;
+      document.getElementById('selCityLvl').innerHTML = htmlL;
+      document.getElementById('selMetropoliLvl').innerHTML = htmlL;
+
+      const countryMultipliers = [0.90, 0.89, 0.88, 0.87, 0.86, 0.85, 0.84, 0.83, 0.82, 0.81, 0.80, 0.79, 0.78, 0.77, 0.76, 0.74, 0.72, 0.69, 0.65, 0.60];
+      let htmlCB = `<option value="1">Nessuno (100%)</option>`;
+      countryMultipliers.forEach((val, i) => { htmlCB += `<option value="${val}">Livello ${i + 1} (${Math.round(val * 100)}%)</option>`; });
+      document.getElementById('selCountryBonus').innerHTML = htmlCB;
+
+      let htmlMax = "";
+      for (let i = 9; i >= 1; i--) { htmlMax += `<option value="${i}">${i} min</option>`; }
+      let sbm = document.getElementById('selBounceMax'); if(sbm) { sbm.innerHTML = htmlMax; sbm.value = "6"; }
+
+      updateBounceLimits(true);
+      updateUI();
+    }
+
+    function updateBounceLimits(isInit = false) {
+      let maxEl = document.getElementById('selBounceMax');
+      let minSel = document.getElementById('selBounceMin');
+      let maxVal = parseInt(maxEl.value);
+      let currentMin = isInit ? 3 : parseInt(minSel.value || "3");
+
+      minSel.innerHTML = "";
+      for (let i = maxVal; i >= 1; i--) {
+        let opt = document.createElement('option'); opt.value = i; opt.text = `${i} min`; minSel.appendChild(opt);
+      }
+      if (currentMin <= maxVal) { minSel.value = currentMin; } else { minSel.value = maxVal; }
+      if (!isInit) forceRecalc();
+    }
+
+    function updateUI() {
+      if (!GAME_DATA) return;
+      let habRadio = document.querySelector('input[name="hab"]:checked');
+      let hab = habRadio ? habRadio.value : 'castello';
+      
+      document.querySelectorAll('.bonus-area').forEach(el => el.classList.remove('active'));
+      let elArea = document.getElementById('opt' + hab.charAt(0).toUpperCase() + hab.slice(1));
+      if(elArea) elArea.classList.add('active');
+
+      let batchSelect = document.getElementById('selBatch');
+      if (batchSelect && GAME_DATA.habitats && GAME_DATA.habitats[hab] && GAME_DATA.habitats[hab].batches) {
+        let v = batchSelect.value;
+        batchSelect.innerHTML = "";
+        GAME_DATA.habitats[hab].batches.forEach(val => {
+          let opt = document.createElement('option'); opt.value = val; opt.innerText = val; batchSelect.appendChild(opt);
+        });
+        if(v) batchSelect.value = v;
+      }
+    }
+
+    function parseInputLink() {
+      let val = document.getElementById('inCoord').value;
+      let lk = window.parseLK ? window.parseLK(val) : null;
+      if (lk && lk.w) {
+        worldId = lk.w;
+        if (worldId === "327") document.getElementById('areaBonusPaese').classList.add('active');
+        else { document.getElementById('areaBonusPaese').classList.remove('active'); document.getElementById('selCountryBonus').value = "1"; }
+      }
+    }
+
+    function getSpeed(troopKey) {
+      if (!GAME_DATA || !GAME_DATA.troops_base_seconds) return 0;
+      let base = GAME_DATA.troops_base_seconds[troopKey] || 0;
+      let habRadio = document.querySelector('input[name="hab"]:checked');
+      let hab = habRadio ? habRadio.value : 'castello';
+      
+      let factor = 1.0;
+      if(GAME_DATA.habitats && GAME_DATA.habitats[hab]) {
+         factor = GAME_DATA.habitats[hab].base_multiplier || 1.0;
+         if (hab === 'castello') {
+           let chk = document.getElementById('chkMap'), evt = document.getElementById('selEventCastello');
+           if (chk && chk.checked) factor *= 0.95; if (evt && evt.value === "100") factor *= 0.5;
+         }
+         else if (hab === 'fortezza') {
+           let chk = document.getElementById('chkBussola'), evt = document.getElementById('selEventFortezza');
+           if (chk && chk.checked) factor *= 0.95; if (evt && evt.value === "100") factor *= 0.5;
+         }
+         else if (hab === 'citta') {
+           let lvl = document.getElementById('selCityLvl'), evt = document.getElementById('selEventCitta');
+           if(lvl) factor *= GAME_DATA.habitats[hab].building_levels[parseInt(lvl.value)] || 1.0; if (evt && evt.value === "100") factor *= 0.5;
+         }
+         else if (hab === 'metropoli') {
+           let lvl = document.getElementById('selMetropoliLvl'), chk = document.getElementById('chkManovra'), evt = document.getElementById('selEventMetropoli');
+           if(lvl) factor *= GAME_DATA.habitats[hab].building_levels[parseInt(lvl.value)] || 1.0; if (chk && chk.checked) factor *= 0.90; if (evt && evt.value === "100") factor *= 0.5;
+         }
+      }
+      let selCB = document.getElementById('selCountryBonus');
+      if(selCB) factor *= parseFloat(selCB.value) || 1.0;
+      return base * factor;
+    }
+
+    function syncDelay(id) {
+      const v = document.getElementById(id).checked;
+      let c1 = document.getElementById('chkDelay'); if(c1) c1.checked = v; 
+      let c2 = document.getElementById('chkDelayRes'); if(c2) c2.checked = v;
+      forceRecalc();
+    }
+
+    function forceRecalc() {
+      renderList();
+    }
+
+    function startCalc() {
+      let lk = window.parseLK ? window.parseLK(document.getElementById('inCoord').value) : null;
+      if (!lk || lk.x === undefined || lk.y === undefined) return alert("Inserisci un link castello valido!");
+      
+      myCastle = { x: parseInt(lk.x), y: parseInt(lk.y) };
+      let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
+      if (!dVal || !tVal) return alert("Inserisci data e ora!");
+      let startT = new Date(dVal + "T" + tVal);
+      
+      let garrison = parseInt(document.getElementById('inGarrison').value);
+      if (!garrison || garrison < 100) return alert("Inserisci un numero valido di truppe!");
+
+      let batch = parseInt(document.getElementById('selBatch').value);
+      let turn1_troops = batch * 2; 
+      let available = garrison - turn1_troops;
+
+      document.getElementById('selBattleTroop').value = document.getElementById('selTroop').value;
+
+      document.getElementById('inputArea').classList.add('hidden');
+      document.getElementById('resArea').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      let turn1End = new Date(startT.getTime() + 600000);
+      rows = [{ t: turn1End, type: 'garrison', turnNum: 1, covered: true, open: false }];
+
+      let step = 2; 
+      while (available >= batch && step < 50) {
+        let turnEndTime = new Date(startT.getTime() + (step * 600000));
+        rows.push({ t: turnEndTime, type: 'wave', turnNum: step, covered: false, open: false, lastDist: -1 });
+        available -= batch; step++;
+      }
+
+      if (ticker) clearInterval(ticker);
+      ticker = setInterval(loop, 1000);
+      renderList();
+    }
+
+    // GENERAZIONE BERSAGLI ALLA CIECA (MATEMATICA PURA)
+    function generateBlindTargets(turnEndTime, speed) {
+        let now = Date.now();
+        let minOff = parseInt(document.getElementById('selBounceMin').value || "3");
+        let maxOff = parseInt(document.getElementById('selBounceMax').value || "6");
+        let rStart = turnEndTime.getTime() - (maxOff * 60000);
+        let rEnd = turnEndTime.getTime() - (minOff * 60000);
+
+        // Il punto ideale di arrivo è a metà della finestra
+        let targetReturn = (rStart + rEnd) / 2;
+        let travelTime = (targetReturn - now) / 2; // Viaggio di sola andata in ms
+        
+        let dist = Math.round(travelTime / (speed * 1000));
+        
+        if (dist < 1) return null; // Tempo scaduto, distanza impossibile
+
+        let cx = myCastle.x;
+        let cy = myCastle.y;
+        
+        // Genera 5 punti cardinali a distanza 'dist'
+        let points = [
+            { x: cx + dist, y: cy },
+            { x: cx - dist, y: cy },
+            { x: cx, y: cy + dist },
+            { x: cx, y: cy - dist },
+            { x: cx + Math.round(dist * 0.7), y: cy + Math.round(dist * 0.7) }
+        ];
+        
+        // Assicuriamoci che non esistano coordinate negative
+        points = points.map(p => ({ x: Math.max(0, p.x), y: Math.max(0, p.y) }));
+        
+        return { dist: dist, points: points };
+    }
+
+    function renderList() {
+      let el = document.getElementById('resList'); if(!el) return;
+      
+      let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
+      let startT = new Date(dVal + "T" + tVal);
+      let linkUrl = `l+k://coordinates?${myCastle.x},${myCastle.y}&${worldId}`;
+      let pD = (n) => String(n).padStart(2, '0');
+      
+      document.getElementById('resHeaderInfo').innerHTML = `<b>⚔️ Tuo Castello</b><a href="${linkUrl}">${linkUrl}</a><span style="font-size:12px;color:#aaa;display:block;margin-top:4px;">Inizio: ${pD(startT.getDate())}/${pD(startT.getMonth() + 1)} ${pD(startT.getHours())}:${pD(startT.getMinutes())}</span>`;
+
+      el.innerHTML = "";
+      rows.forEach((r, i) => {
+        let div = document.createElement('div');
+        div.className = "st-accordion" + (r.covered ? " covered" : "") + (r.open ? " open" : "");
+        div.id = `row_${i}`;
+        
+        let label = `Turno ${r.turnNum}`;
+        let timeStr = `${pD(r.t.getHours())}:${pD(r.t.getMinutes())}`;
+
+        if (r.type === 'garrison') {
+          div.innerHTML = `
+            <div class="st-header">
+               <div><b>${label}</b> <span style="color:#aaa; font-size:12px; margin-left:8px;">${timeStr}</span></div>
+               <div style="color:var(--green); font-weight:bold;">Guarnigione fissa</div>
+            </div>`;
+        } else {
+          div.innerHTML = `
+            <div class="st-header" onclick="toggleAccordion(${i})">
+               <div><b>${label}</b> <span style="color:#aaa; font-size:12px; margin-left:8px;">${timeStr}</span></div>
+               <div id="status_${i}" class="st-status">Calcolo...</div>
+            </div>
+            <div class="st-body" id="body_${i}"></div>
+          `;
+        }
+        el.appendChild(div);
+        if(r.type !== 'garrison') updateRowData(i, true);
+      });
+    }
+
+    function loop() {
+      rows.forEach((r, i) => {
+        if (r.type !== 'garrison') updateRowData(i, false);
+      });
+    }
+
+    function updateRowData(i, forceRenderBody) {
+      let r = rows[i];
+      let statusDiv = document.getElementById(`status_${i}`);
+      let bodyDiv = document.getElementById(`body_${i}`);
+      if (!statusDiv || !bodyDiv) return;
+
+      if (r.covered) {
+          statusDiv.innerHTML = `<span style="color:var(--green); font-weight:bold;">COPERTO</span> <button class="btn-scopri" onclick="event.stopPropagation(); uncovRow(${i})">SCOPRI</button>`;
+          bodyDiv.style.display = 'none';
+          return;
+      }
+
+      let speed = getSpeed(document.getElementById('selBattleTroop').value);
+      let targetData = generateBlindTargets(r.t, speed);
+
+      if (!targetData) {
+          statusDiv.innerHTML = `<span style="color:var(--danger); font-weight:bold;">SCADUTO</span>`;
+          bodyDiv.innerHTML = `<div style="text-align:center; padding:10px; color:var(--danger);">Non c'è più tempo per questo turno.</div>`;
+          return;
+      }
+
+      // È valido! Mostriamo PRONTO e la freccetta
+      let arrow = r.open ? "▲" : "▼";
+      statusDiv.innerHTML = `<span class="st-now">PRONTO</span> <span style="color:#aaa; margin-left:10px; font-size:12px;">${arrow}</span>`;
+
+      // Aggiorniamo i link solo se la distanza è cambiata per non far sfarfallare i bottoni o se forzato
+      if (forceRenderBody || r.lastDist !== targetData.dist) {
+          r.lastDist = targetData.dist;
+          
+          let linksHtml = `<div style="font-size:12px; color:var(--muted); margin-bottom:10px; text-align:right;">Distanza calcolata: <b>${targetData.dist}</b> campi</div>`;
+          linksHtml += `<div class="target-grid">`;
+          
+          targetData.points.forEach((p, idx) => {
+              let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
+              linksHtml += `<a href="${url}" class="lnk-btn-launch">Link Bersaglio ${idx + 1}</a>`;
+          });
+          
+          linksHtml += `</div>`;
+          linksHtml += `<button class="btn-copri" style="margin-top:15px;" onclick="covRow(${i})">SEGNA COME COPERTO</button>`;
+          
+          bodyDiv.innerHTML = linksHtml;
+      }
+    }
+
+    function toggleAccordion(i) {
+      if (rows[i].covered) return; // Se è coperto non si apre la tendina
+      rows[i].open = !rows[i].open;
+      renderList();
+    }
+
+    window.covRow = function(i) {
+      rows[i].covered = true;
+      rows[i].open = false; // Chiude la tendina
+      renderList();
+    };
+
+    window.uncovRow = function(i) {
+      rows[i].covered = false;
+      renderList();
+    };
+
+    function reset() { 
+      document.getElementById('inputArea').classList.remove('hidden'); 
+      document.getElementById('resArea').classList.add('hidden'); 
+      if (ticker) clearInterval(ticker); 
+    }
+  </script>
+</body>
+</html>
