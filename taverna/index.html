@@ -19,8 +19,6 @@
     <script>
         var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
         document.write('<link rel="stylesheet" href="/lord-knighttools/common.css?v=' + cacheBuster + '">');
-        
-        // Questo punta al file style.css che è dentro la cartella della taverna, quindi va bene così!
         document.write('<link rel="stylesheet" href="style.css?v=' + cacheBuster + '">');
     </script>
 </head>
@@ -46,6 +44,13 @@
             <div class="game-card" onclick="openGame('campanelle')"><div class="icon">🪙</div><h3 data-lang="tav_game_7">Tre Campanelle</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
             <div class="game-card" onclick="openGame('bevuta')"><div class="icon">🍻</div><h3 data-lang="tav_game_8">Gara di Bevute</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
             <div class="game-card" onclick="openGame('equilibrio')"><div class="icon">⚖️</div><h3 data-lang="tav_game_9">Equilibrio del Cameriere</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            
+            <div class="game-card" onclick="openGame('dadibulloni')"><div class="icon">🔩</div><h3 data-lang="tav_game_10">Dadi e Bulloni</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('mazepaint')"><div class="icon">🎨</div><h3 data-lang="tav_game_11">Maze Paint</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('colorblock')"><div class="icon">🧩</div><h3 data-lang="tav_game_12">Color Block</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('sudoku')"><div class="icon">🔢</div><h3 data-lang="tav_game_13">Sudoku</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('impiccato')"><div class="icon">🪢</div><h3 data-lang="tav_game_14">Impiccato</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('memory')"><div class="icon">🃏</div><h3 data-lang="tav_game_15">Memory</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
         </div>
     </div> 
     
@@ -57,7 +62,7 @@
             <div class="game-header-modal">
                 <h2 id="modal-title">GIOCO</h2>
                 <div class="hud">
-                    <span style="border:1px solid var(--gold); padding:2px 8px; border-radius:10px; color:var(--gold);">⏳ <b id="game-timer">60</b>s</span>
+                    <span id="timer-container" style="border:1px solid var(--gold); padding:2px 8px; border-radius:10px; color:var(--gold);">⏳ <b id="game-timer">60</b>s</span>
                     <span>Punti: <b id="global-score">0</b></span>
                     <span>Vite: <b id="global-lives">❤️❤️❤️</b></span>
                 </div>
@@ -66,7 +71,7 @@
             
             <div id="game-instructions" class="overlay-panel">
                 <h3 data-lang="tav_instructions">📜 Istruzioni</h3><p id="instruction-text"></p>
-                <button onclick="startGameLogic()" class="btn btn-primary" style="margin-top: 10px;">INIZIA (60s)</button>
+                <button onclick="startGameLogic()" class="btn btn-primary" style="margin-top: 10px;">INIZIA</button>
             </div>
             
             <div id="game-over-panel" class="overlay-panel hidden">
@@ -79,11 +84,8 @@
 
     <script>
         var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
-        // Puntano alla cartella principale per non raddoppiare i file inutilmente
         document.write('<script src="/lord-knighttools/common.js?v=' + cacheBuster + '"><\/script>');
         document.write('<script src="/lord-knighttools/lang.js?v=' + cacheBuster + '"><\/script>');
-        
-        // Questo script è solo della taverna, quindi resta senza percorso (lo cerca nella stessa cartella)
         document.write('<script src="script.js?v=' + cacheBuster + '"><\/script>');
     </script>
 </body>
