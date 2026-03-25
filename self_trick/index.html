@@ -4,28 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <title>Self Trick Lords & Knights | Calcolatore Difesa - Re Panza</title>
-  <meta name="description" content="Calcola i tempi perfetti per il Self Trick su Lords & Knights. Salva le tue truppe coprendo i turni difensivi con precisione millimetrica.">
-  <meta name="keywords" content="self trick lords and knights, l&k self trick, difesa l&k, calcolatore turni difensivi, truppe l&k, schivare attacchi lords and knights">
-  <meta name="author" content="Re Panza">
-  <link rel="canonical" href="https://re-panza.github.io/lord-knighttools/self_trick/">
-
-  <meta property="og:title" content="Self Trick | L&K Tools Hub">
-  <meta property="og:description" content="Calcola i tempi perfetti per coprire i tuoi turni difensivi e salvare le truppe.">
-  <meta property="og:image" content="https://re-panza.github.io/lord-knighttools/re-panza-intro.png">
-  <meta property="og:url" content="https://re-panza.github.io/lord-knighttools/self_trick/">
-  <meta property="og:type" content="website">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Self Trick | L&K Tools Hub">
-  <meta name="twitter:description" content="Calcola i tempi perfetti per coprire i tuoi turni difensivi.">
-  <meta name="twitter:image" content="https://re-panza.github.io/lord-knighttools/re-panza-intro.png">
-
   <script src="/lord-knighttools/version.js"></script>
   <script>
     if (typeof APP_VERSION !== 'undefined') {
@@ -33,586 +16,210 @@
     }
   </script>
   <link rel="apple-touch-icon" href="/lord-knighttools/icona.png">
-  
   <link rel="stylesheet" href="/lord-knighttools/common.css">
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    :root {
+      --bg: #0f172a; --card-solid: #111c33; --muted: #93a4c7; --text: #e8eefc; --accent: #60a5fa;
+      --border: rgba(255, 255, 255, .10); --danger: #ef4444; --gold: #fbbf24; --green: #34d399;
+    }
+    body {
+      margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text);
+      padding: 24px 20px; -webkit-user-select: none;
+    }
+    .card { background: var(--card-solid); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 20px; }
+    .row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .col { flex: 1; }
+    label { color: var(--muted); font-size: 12px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+    input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255, 255, 255, .04); color: var(--text); font-weight: bold; }
+    .btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, .5); background: rgba(251, 191, 36, .15); color: var(--gold); font-weight: 700; cursor: pointer; }
+    .hidden { display: none !important; }
+    .res-row { display: grid; grid-template-columns: 50px 1fr 90px; gap: 10px; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .st-body { display: none; padding: 15px; background: rgba(0,0,0,0.4); border-top: 1px dashed rgba(255,255,255,0.05); }
+    .st-body.open { display: block; }
+    .target-row-generated { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; margin-bottom: 4px; }
+    .lnk-btn-launch { padding: 5px 15px; background: rgba(251, 191, 36, 0.15); border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; }
+  </style>
 </head>
 
 <body>
+  <div class="top-nav"><a href="/lord-knighttools/" class="home-link">🏠 Torna alla Home</a></div>
+  <div class="page-title"><h2>⚔️ Self Trick</h2></div>
 
-  <div class="top-nav container-wide">
-    <a href="/lord-knighttools/" class="home-link">🏠 Torna alla Home</a>
-  </div>
-
-  <div class="page-title container-wide">
-    <h2>⚔️ <span>Self Trick</span></h2>
-  </div>
-
-  <div id="inputArea" class="card container-wide">
-    <div class="row" id="tour-st-1" style="margin-bottom: 0;">
-      <div class="col">
-        <label>🎯 Link castello attaccato</label>
-        <input type="text" id="inCoord" placeholder="l+k://coordinates?x,y&337" oninput="extractWorld()">
-      </div>
-    </div>
-
-    <div class="row" id="tour-st-2" style="margin-bottom: 0;">
+  <div id="inputArea" class="card">
+    <div class="row"><div class="col"><label>🎯 Link castello attaccato</label><input type="text" id="inCoord" oninput="extractWorld()"></div></div>
+    <div class="row">
       <div class="col"><label>📅 Inizio Battaglia</label><input type="date" id="inDate"></div>
       <div class="col"><label>⏱️ Ora Inizio</label><input type="time" id="inTime" step="60"></div>
     </div>
-
-    <div id="areaBonusPaese" class="bonus-area" style="background: rgba(96, 165, 250, 0.1); border-color: var(--accent);">
-      <label style="color:var(--accent); font-weight:bold;">Bonus Velocità Paese (Sentieri di Ghiaia)</label>
-      <select id="selCountryBonus" onchange="forceRecalc()">
-        <option value="1">Nessuno (100%)</option>
-      </select>
-    </div>
-
-    <div id="tour-st-3" style="margin-bottom: 0;">
-      <label>Habitat Partenza</label>
-      <div class="habitat-selector">
-        <label class="hab-opt"><input type="radio" name="hab" value="castello" checked onchange="updateUI()"><span>Castello</span></label>
-        <label class="hab-opt"><input type="radio" name="hab" value="fortezza" onchange="updateUI()"><span>Fortezza</span></label>
-        <label class="hab-opt"><input type="radio" name="hab" value="citta" onchange="updateUI()"><span>Città</span></label>
-        <label class="hab-opt"><input type="radio" name="hab" value="metropoli" onchange="updateUI()"><span>Metropoli</span></label>
-      </div>
-
-      <div id="optCastello" class="bonus-area active">
-        <label class="chk-label"><input type="checkbox" id="chkMap" onchange="forceRecalc()"> <span>Mappa dell'Area (+5%)</span></label>
-        <div class="section-separator">
-          <span class="sec-title">Eventi Speciali</span>
-          <select id="selEventCastello" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
-        </div>
-      </div>
-
-      <div id="optFortezza" class="bonus-area">
-        <label class="chk-label"><input type="checkbox" id="chkBussola" onchange="forceRecalc()"> <span>Bussola (+5%)</span></label>
-        <div class="section-separator">
-          <span class="sec-title">Eventi Speciali</span>
-          <select id="selEventFortezza" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
-        </div>
-      </div>
-
-      <div id="optCitta" class="bonus-area">
-        <div class="row" style="margin:0">
-          <div class="col">
-            <label style="color:#fff">Livello Caserma (1-30)</label>
-            <select id="selCityLvl" onchange="forceRecalc()"></select>
-          </div>
-        </div>
-        <div class="section-separator">
-          <span class="sec-title">Eventi Speciali</span>
-          <select id="selEventCitta" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
-        </div>
-      </div>
-
-      <div id="optMetropoli" class="bonus-area">
-        <div class="row" style="margin:0">
-          <div class="col">
-            <label style="color:#fff">Livello Accademia (1-30)</label>
-            <select id="selMetropoliLvl" onchange="forceRecalc()"></select>
-          </div>
-        </div>
-        <div style="margin-top:8px">
-          <label class="chk-label"><input type="checkbox" id="chkManovra" onchange="forceRecalc()"> <span>Manovra di fianco (+10%)</span></label>
-        </div>
-        <div class="section-separator">
-          <span class="sec-title">Eventi Speciali</span>
-          <select id="selEventMetropoli" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
+    <div class="row">
+      <div class="col">
+        <label>Finestra Rientro (Min prima)</label>
+        <div style="display:flex; gap:5px;">
+          <select id="selBounceMax"><option value="6">6 min</option><option value="9">9 min</option></select>
+          <select id="selBounceMin"><option value="3">3 min</option></select>
         </div>
       </div>
     </div>
-
-    <div class="bounce-window-config" id="tour-st-4" style="margin-bottom: 0;">
-      <label style="text-transform:none; line-height:1.2; margin-bottom:8px; color:var(--text)">Finestra di Rientro (Minuti prima della fine del turno)</label>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <div style="flex:1">
-          <label>Da (Min prima)</label>
-          <select id="selBounceMax" onchange="updateBounceLimits()"></select>
-        </div>
-        <div style="flex:1">
-          <label>A (Min prima)</label>
-          <select id="selBounceMin" onchange="forceRecalc()"></select>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row" id="tour-st-5" style="margin-bottom: 0;">
-      <div class="col" style="flex:2"><label>Truppa</label><select id="selTroop"></select></div>
+    <div class="row">
+      <div class="col"><label>Truppa</label><select id="selTroop"></select></div>
       <div class="col"><label>Plotone</label><select id="selBatch"></select></div>
     </div>
+    <div class="row"><div class="col"><label class="chk-label"><input type="checkbox" id="chkDelay"> ⏱️ Ritardo Dinamico (5%)</label></div></div>
+    <div class="row"><div class="col"><label>Truppe Totali</label><input type="number" id="inGarrison"></div></div>
+    <button class="btn" onclick="startCalc()">CALCOLA</button>
+  </div>
 
-    <div class="row" id="tour-st-6" style="margin-bottom: 0;">
-      <div style="width:100%">
-        <div style="margin-bottom:8px; position:relative;" id="delay-container">
-          <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" id="chkDelay" onchange="syncDelay('chkDelay')">
-            <span>⏱️ Ritardo Dinamico (0% - 5%)</span>
-          </label>
-        </div>
-        
-        <label>Truppe Totali</label>
-        <input type="number" id="inGarrison" style="text-align:center" placeholder="Es. 1000">
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="startCalc()" id="tour-st-7">CALCOLA</button>
-    
-  </div> 
-  
-  <div id="resArea" class="hidden card container-wide" style="padding:0; overflow:hidden;">
-    <div id="resHeaderInfo" class="res-header-info"></div>
-
-    <div class="quick-bar">
-      <button class="back-btn" onclick="reset()">🔙</button>
-      <select id="selBattleTroop" onchange="forceRecalc()" style="margin-bottom: 0;"></select>
-      
-      <div id="delay-res-container" style="display:flex; align-items:center; margin-left:auto;">
-        <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items:center; gap: 5px; cursor: pointer; font-size: 11px; padding: 4px 8px; background: rgba(251, 191, 36, 0.1); border: 1px solid var(--gold); border-radius: 6px;">
-          <input type="checkbox" id="chkDelayRes" onchange="syncDelay('chkDelayRes')">
-          <span>⏱️ Ritardo</span>
-        </label>
-      </div>
-
-    </div>
-
+  <div id="resArea" class="hidden card" style="padding:0;">
+    <div id="resHeaderInfo" style="padding:15px; text-align:center;"></div>
     <div id="resList"></div>
+    <button class="btn" onclick="reset()" style="margin: 10px;">Indietro</button>
   </div>
 
   <script>
-    if (typeof window.parseLK === 'undefined') {
-        window.parseLK = function(val) {
-            let m = val.match(/x=([0-9]+).*?y=([0-9]+)/i) || val.match(/([0-9]+),([0-9]+)/);
-            if(m) return { x: parseInt(m[1]), y: parseInt(m[2]), w: val.split('&')[1] || "337" };
-            return null;
-        }
-    }
-
     let GAME_DATA = null;
-    let myCastle = null, worldId = "337"; 
+    let myCastle = null, worldId = "337";
     let rows = [], ticker = null;
 
     async function loadGameData() {
-      try {
-        let response = await fetch('/lord-knighttools/database_truppe.json?v=' + Date.now());
-        if (!response.ok) throw new Error("HTTP Error");
-        const json = await response.json();
-        GAME_DATA = (json && json.game_config) ? json.game_config : json;
-        initUI();
-      } catch (e) {
-        console.error(e);
-        alert("Errore database truppe: " + e.message);
-      }
+      let response = await fetch('/lord-knighttools/database_truppe.json');
+      const json = await response.json();
+      GAME_DATA = json.game_config || json;
+      initTroopUI();
     }
 
-    const TROOPS_UI = [
-      { key: "Lanciere" }, { key: "Balestriere" }, { key: "Cav. Pesante" }, { key: "Spadaccino" },
-      { key: "Arciere" }, { key: "Cav. Leggero" }, { key: "Carro bue" }, { key: "Ashigaru" },
-      { key: "Berserker" }, { key: "Arc. Daikyu" }, { key: "Arc. Norreno" }, { key: "Cav. Ascia" }
-    ];
-
-    window.onload = () => { loadGameData(); };
-
-    function initUI() {
-      let htmlT = "";
-      TROOPS_UI.forEach(t => { htmlT += `<option value="${t.key}">${t.key}</option>`; });
-      let st = document.getElementById('selTroop'); if(st) st.innerHTML = htmlT;
-      let sbt = document.getElementById('selBattleTroop'); if(sbt) sbt.innerHTML = htmlT;
-
-      let htmlL = "";
-      for (let i = 1; i <= 30; i++) htmlL += `<option value="${i}">Livello ${i}</option>`;
-      document.getElementById('selCityLvl').innerHTML = htmlL;
-      document.getElementById('selMetropoliLvl').innerHTML = htmlL;
-
-      const countryMultipliers = [0.90, 0.89, 0.88, 0.87, 0.86, 0.85, 0.84, 0.83, 0.82, 0.81, 0.80, 0.79, 0.78, 0.77, 0.76, 0.74, 0.72, 0.69, 0.65, 0.60];
-      let htmlCB = `<option value="1">Nessuno (100%)</option>`;
-      countryMultipliers.forEach((val, i) => { htmlCB += `<option value="${val}">Livello ${i + 1} (${Math.round(val * 100)}%)</option>`; });
-      document.getElementById('selCountryBonus').innerHTML = htmlCB;
-
-      let htmlMax = "";
-      for (let i = 9; i >= 1; i--) { htmlMax += `<option value="${i}">${i} min</option>`; }
-      let sbm = document.getElementById('selBounceMax'); if(sbm) { sbm.innerHTML = htmlMax; sbm.value = "6"; }
-
-      updateBounceLimits(true);
-      updateUI();
-    }
-
-    function updateBounceLimits(isInit = false) {
-      let maxEl = document.getElementById('selBounceMax');
-      let minSel = document.getElementById('selBounceMin');
-      let maxVal = parseInt(maxEl.value);
-      let currentMin = isInit ? 3 : parseInt(minSel.value || "3");
-
-      minSel.innerHTML = "";
-      for (let i = maxVal; i >= 1; i--) {
-        let opt = document.createElement('option'); opt.value = i; opt.text = `${i} min`; minSel.appendChild(opt);
-      }
-      if (currentMin <= maxVal) { minSel.value = currentMin; } else { minSel.value = maxVal; }
-      if (!isInit) forceRecalc();
+    function initTroopUI() {
+      const troops = ["Lanciere", "Balestriere", "Cav. Pesante", "Spadaccino", "Arciere", "Cav. Leggero", "Carro bue"];
+      let h = ""; troops.forEach(t => h += `<option value="${t}">${t}</option>`);
+      document.getElementById('selTroop').innerHTML = h;
+      document.getElementById('selBatch').innerHTML = "<option value='100'>100</option><option value='500'>500</option>";
     }
 
     function extractWorld() {
-      let val = document.getElementById('inCoord').value;
-      let lk = window.parseLK(val);
-      if (lk && lk.w) {
-        worldId = lk.w;
-        if (worldId === "327") document.getElementById('areaBonusPaese').classList.add('active');
-        else { document.getElementById('areaBonusPaese').classList.remove('active'); document.getElementById('selCountryBonus').value = "1"; }
-      }
+      let v = document.getElementById('inCoord').value;
+      let m = v.match(/&([0-9]+)/);
+      if(m) worldId = m[1];
     }
 
-    function updateUI() {
-      if (!GAME_DATA) return;
-      let habRadio = document.querySelector('input[name="hab"]:checked');
-      let hab = habRadio ? habRadio.value : 'castello';
-      
-      document.querySelectorAll('.bonus-area').forEach(el => el.classList.remove('active'));
-      let elArea = document.getElementById('opt' + hab.charAt(0).toUpperCase() + hab.slice(1));
-      if(elArea) elArea.classList.add('active');
-
-      let batchSelect = document.getElementById('selBatch');
-      if (batchSelect && GAME_DATA.habitats && GAME_DATA.habitats[hab] && GAME_DATA.habitats[hab].batches) {
-        let v = batchSelect.value;
-        batchSelect.innerHTML = "";
-        GAME_DATA.habitats[hab].batches.forEach(val => {
-          let opt = document.createElement('option'); opt.value = val; opt.innerText = val; batchSelect.appendChild(opt);
-        });
-        if(v) batchSelect.value = v;
-      }
-    }
-
-    function getSpeed(troopKey) {
-      if (!GAME_DATA || !GAME_DATA.troops_base_seconds) return 0;
-      let base = GAME_DATA.troops_base_seconds[troopKey] || 0;
-      let habRadio = document.querySelector('input[name="hab"]:checked');
-      let hab = habRadio ? habRadio.value : 'castello';
-      
-      let factor = 1.0;
-      if(GAME_DATA.habitats && GAME_DATA.habitats[hab]) {
-         factor = GAME_DATA.habitats[hab].base_multiplier || 1.0;
-         if (hab === 'castello') {
-           let chk = document.getElementById('chkMap'), evt = document.getElementById('selEventCastello');
-           if (chk && chk.checked) factor *= 0.95; if (evt && evt.value === "100") factor *= 0.5;
-         }
-         else if (hab === 'fortezza') {
-           let chk = document.getElementById('chkBussola'), evt = document.getElementById('selEventFortezza');
-           if (chk && chk.checked) factor *= 0.95; if (evt && evt.value === "100") factor *= 0.5;
-         }
-         else if (hab === 'citta') {
-           let lvl = document.getElementById('selCityLvl'), evt = document.getElementById('selEventCitta');
-           if(lvl) factor *= GAME_DATA.habitats[hab].building_levels[parseInt(lvl.value)] || 1.0; if (evt && evt.value === "100") factor *= 0.5;
-         }
-         else if (hab === 'metropoli') {
-           let lvl = document.getElementById('selMetropoliLvl'), chk = document.getElementById('chkManovra'), evt = document.getElementById('selEventMetropoli');
-           if(lvl) factor *= GAME_DATA.habitats[hab].building_levels[parseInt(lvl.value)] || 1.0; if (chk && chk.checked) factor *= 0.90; if (evt && evt.value === "100") factor *= 0.5;
-         }
-      }
-      let selCB = document.getElementById('selCountryBonus');
-      if(selCB) factor *= parseFloat(selCB.value) || 1.0;
-      return base * factor;
-    }
-
-    function syncDelay(id) {
-      const v = document.getElementById(id).checked;
-      let c1 = document.getElementById('chkDelay'); if(c1) c1.checked = v; 
-      let c2 = document.getElementById('chkDelayRes'); if(c2) c2.checked = v;
-      forceRecalc();
-    }
-
-    function forceRecalc() {
-      if (rows.length > 0) {
-        forceRecalcTargets();
-        renderList();
-      }
+    function getSpeed() {
+      let t = document.getElementById('selTroop').value;
+      return GAME_DATA.troops_base_seconds[t] || 600;
     }
 
     function startCalc() {
-      let lk = window.parseLK(document.getElementById('inCoord').value);
-      if (!lk || lk.x === undefined || lk.y === undefined) return alert("Inserisci un link castello valido!");
-      
-      myCastle = { x: parseInt(lk.x), y: parseInt(lk.y) };
-      let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
-      if (!dVal || !tVal) return alert("Inserisci data e ora!");
-      let startT = new Date(dVal + "T" + tVal);
-      if (startT < new Date(Date.now() - 60000)) return alert("Data nel passato!");
-      
+      let v = document.getElementById('inCoord').value;
+      let m = v.match(/x=([0-9]+).*?y=([0-9]+)/i) || v.match(/([0-9]+),([0-9]+)/);
+      if(!m) return alert("Link non valido");
+      myCastle = { x: parseInt(m[1]), y: parseInt(m[2]) };
+
+      let startT = new Date(document.getElementById('inDate').value + "T" + document.getElementById('inTime').value);
       let garrison = parseInt(document.getElementById('inGarrison').value);
-      if (!garrison || garrison < 100) return alert("Inserisci un numero valido di truppe!");
-
       let batch = parseInt(document.getElementById('selBatch').value);
-      let turn1_troops = batch * 2; 
-      let available = garrison - turn1_troops;
 
-      document.getElementById('selBattleTroop').value = document.getElementById('selTroop').value;
+      rows = [];
+      let available = garrison - (batch * 2);
+      rows.push({ t: new Date(startT.getTime() + 600000), type: 'garrison', turn: 1, covered: true });
 
-      document.getElementById('inputArea').classList.add('hidden');
-      document.getElementById('resArea').classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      let turn1End = new Date(startT.getTime() + 600000);
-      rows = [{ t: turn1End, type: 'garrison', turnNum: 1, covered: true, open: false }];
-
-      let step = 2; 
-      while (available >= batch && step < 50) {
-        let turnEndTime = new Date(startT.getTime() + (step * 600000));
-        rows.push({ t: turnEndTime, type: 'wave', turnNum: step, target: null, covered: false, open: false });
+      let step = 2;
+      while(available >= batch && step < 30) {
+        rows.push({ t: new Date(startT.getTime() + (step * 600000)), type: 'wave', turn: step, covered: false, open: false });
         available -= batch; step++;
       }
 
-      forceRecalcTargets();
-      if (ticker) clearInterval(ticker);
-      ticker = setInterval(loop, 1000);
+      document.getElementById('inputArea').classList.add('hidden');
+      document.getElementById('resArea').classList.remove('hidden');
+      ticker = setInterval(updateAll, 1000);
       renderList();
     }
 
-    // === IL MOTORE MATEMATICO EXACT MATCH (LIMITATO A 250 CAMPI) ===
-    function forceRecalcTargets() {
-      rows.forEach(r => { if (r.type === 'wave') { r.target = null; } });
-      let troopKey = document.getElementById('selBattleTroop').value;
-      let speed = getSpeed(troopKey);
-      
-      rows.forEach(r => { 
-          if (r.type === 'wave' && !r.covered) { 
-              r.target = findTarget(r.t, speed, r.turnNum); 
-          } 
-      });
+    function updateAll() {
+      rows.forEach((r, i) => { if(r.type === 'wave') updateRowLogic(i); });
     }
 
-    function findTarget(turnEndTime, speed, turnNum) {
-      let minOff = parseInt(document.getElementById('selBounceMin').value || "3");
-      let maxOff = parseInt(document.getElementById('selBounceMax').value || "6");
-      let rStart = turnEndTime.getTime() - (maxOff * 60000);
-      let rEnd = turnEndTime.getTime() - (minOff * 60000);
-      
-      let turnStartTime = turnEndTime.getTime() - 600000;
-      if (rStart < turnStartTime) rStart = turnStartTime; // Sicurezza impatto
-      
-      let chk = document.getElementById('chkDelay');
-      let isDelayEnabled = chk ? chk.checked : false;
-      let now = Date.now();
-      
-      let best = null; 
-      let minWait = Infinity;
-
-      // Simuliamo la ricerca distanze come nel vecchio codice (da 1 a 250 campi massimo)
-      for (let D = 1; D <= 250; D++) {
-        let baseOneWay = D * speed * 1000;
-        let maxOneWay = isDelayEnabled ? baseOneWay * 1.05 : baseOneWay;
-        let tripFast = baseOneWay * 2;
-        let tripSlow = baseOneWay + maxOneWay;
-
-        let lStart_Strict = rStart - tripSlow;
-        let lEnd_Strict = rEnd - tripFast;
-
-        // Se l'orario di partenza valido è già passato per questa distanza, ignorala
-        if (now > lEnd_Strict) continue;
-
-        let wait = Math.max(0, lStart_Strict - now);
-
-        if (wait < minWait) {
-          minWait = wait;
-          best = { dist: D, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict };
-        } else if (wait === minWait) {
-          // A parità di attesa (es. wait=0), scegliamo quella che ci dà una finestra di lancio più ampia
-          if (best && lEnd_Strict > best.lEnd_Strict) {
-            best = { dist: D, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict };
-          }
-        }
-      }
-      
-      if (!best) return null;
-      
-      let cx = myCastle.x;
-      let cy = myCastle.y;
-      let D = best.dist;
-      
-      // Generiamo i 5 link esatti a questa distanza
-      let points = [
-          { x: cx + D, y: cy },
-          { x: cx - D, y: cy },
-          { x: cx, y: cy + D },
-          { x: cx, y: cy - D },
-          { x: cx + Math.round(D * 0.7), y: cy + Math.round(D * 0.7) }
-      ];
-      best.points = points.map(p => ({ x: Math.max(0, p.x), y: Math.max(0, p.y) }));
-      
-      return best;
-    }
-
-
-    // --- COSTRUZIONE DELLA GRAFICA DELLA GRIGLIA ---
-    function renderList() {
-      let el = document.getElementById('resList'); if(!el) return;
-      
-      let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
-      let startT = new Date(dVal + "T" + tVal);
-      let linkUrl = `l+k://coordinates?${myCastle.x},${myCastle.y}&${worldId}`;
-      let pD = (n) => String(n).padStart(2, '0');
-      
-      document.getElementById('resHeaderInfo').innerHTML = `<b>⚔️ Tuo Castello</b><br><a href="${linkUrl}">${linkUrl}</a><span style="font-size:12px;color:#aaa;display:block;margin-top:4px;">Inizio: ${pD(startT.getDate())}/${pD(startT.getMonth() + 1)} ${pD(startT.getHours())}:${pD(startT.getMinutes())}</span>`;
-
-      el.innerHTML = "";
-      rows.forEach((r, i) => {
-        let isGarrison = r.type === 'garrison';
-        let label = `Turno ${r.turnNum}`;
-        let colTime = `<div class="col-time"><div class="t-label">${label}</div><div class="t-val">${pD(r.t.getHours())}:${pD(r.t.getMinutes())}</div></div>`;
-
-        let divRow = document.createElement('div');
-        divRow.className = "res-row" + (r.covered ? " covered" : "");
-        divRow.id = `row_${i}`;
-        
-        if (!isGarrison) {
-            divRow.onclick = () => toggleAccordion(i);
-        }
-
-        if (isGarrison) {
-            divRow.innerHTML = `${colTime}<div class="col-info" style="color:var(--green);font-weight:bold; font-size:14px;">Guarnigione fissa</div><div class="col-action"></div>`;
-            el.appendChild(divRow);
-        } else {
-            // LA STRUTTURA A GRIGLIA PERFETTA
-            divRow.innerHTML = `
-                ${colTime}
-                <div class="col-info" id="info_${i}"><div class="info-status st-wait">Calcolo...</div></div>
-                <div class="col-action" id="act_${i}"><span style="color:#aaa; font-size:16px; font-weight:bold;">▼</span></div>
-            `;
-            el.appendChild(divRow);
-
-            // CORPO DELLA TENDINA
-            let bodyDiv = document.createElement('div');
-            bodyDiv.id = `body_${i}`;
-            bodyDiv.className = r.open && !r.covered ? "st-body open" : "st-body";
-            el.appendChild(bodyDiv);
-
-            updateRowData(i);
-        }
-      });
-    }
-
-    function loop() {
-      rows.forEach((r, i) => {
-        if (r.type !== 'garrison') updateRowData(i);
-      });
-    }
-
-    function updateRowData(i) {
+    function updateRowLogic(i) {
       let r = rows[i];
-      let infoDiv = document.getElementById(`info_${i}`);
-      let actDiv = document.getElementById(`act_${i}`);
-      let bodyDiv = document.getElementById(`body_${i}`);
-      if (!infoDiv || !actDiv || !bodyDiv) return;
+      if(r.covered) return;
 
-      if (r.covered) {
-          infoDiv.innerHTML = `<span class="st-covered-text">COPERTO</span>`;
-          actDiv.innerHTML = `<div class="btn-scopri" onclick="event.stopPropagation(); uncovRow(${i})">SCOPRI</div>`;
-          bodyDiv.className = "st-body"; 
-          return;
-      }
-
-      if (!r.target) {
-          infoDiv.innerHTML = `<div class="info-status st-wait">SCADUTO</div>`;
-          actDiv.innerHTML = ``;
-          bodyDiv.className = "st-body";
-          return;
-      }
-
-      let { dist, points, baseOneWay, maxOneWay, rStart, rEnd, lStart_Strict, lEnd_Strict } = r.target;
+      let speed = getSpeed();
       let now = Date.now();
-      let isValidNow = (now >= lStart_Strict && now <= lEnd_Strict);
-      
-      let reqMinImpact = rStart - baseOneWay; 
-      let reqMaxImpact = rEnd - baseOneWay;
-      let d1 = new Date(reqMinImpact); let d2 = new Date(reqMaxImpact);
-      let pD = (n) => String(n).padStart(2, '0');
-      let bStr = `${pD(d1.getHours())}:${pD(d1.getMinutes())}:${pD(d1.getSeconds())} - ${pD(d2.getHours())}:${pD(d2.getMinutes())}:${pD(d2.getSeconds())}`;
+      let winMax = parseInt(document.getElementById('selBounceMax').value);
+      let winMin = parseInt(document.getElementById('selBounceMin').value);
+      let isDelay = document.getElementById('chkDelay').checked;
 
-      let chk = document.getElementById('chkDelay');
-      let isDelayEnabledGlobal = chk ? chk.checked : false;
-      let isDelayNeeded = (now + baseOneWay) < reqMinImpact; 
+      // Fine Turno r.t (es 08:00) -> Rientro tra r.t - 6m e r.t - 3m
+      let rStart = r.t.getTime() - (winMax * 60000);
+      let rEnd = r.t.getTime() - (winMin * 60000);
 
-      let delayHtml = "";
-      if (isDelayEnabledGlobal && isDelayNeeded) {
-        if (isValidNow) { delayHtml = `<span style="color:var(--gold); font-weight:bold">Ritardo Dinamico Applicato</span>`; } 
-        else { delayHtml = `<span style="color:var(--muted); font-weight:bold">Ritardo verrà calcolato</span>`; }
-      } else {
-        delayHtml = `<span style="color:var(--accent); font-weight:bold">Nessun Ritardo</span>`;
+      let found = null;
+      for(let d=1; d<=250; d++) {
+        let oneWay = d * speed * 1000;
+        let outward = isDelay ? oneWay * 1.05 : oneWay;
+        
+        let lStart = rStart - (outward + oneWay);
+        let lEnd = rEnd - (oneWay + oneWay);
+
+        if (now > lEnd) continue;
+        found = { d, lStart, lEnd, rStart, rEnd, oneWay };
+        break;
       }
 
-      let wait = lStart_Strict - now;
+      let info = document.getElementById(`info_${i}`);
+      let act = document.getElementById(`act_${i}`);
+      let body = document.getElementById(`body_${i}`);
 
-      // --- AGGIORNAMENTO VISIVO IN BASE AL TEMPO (COME L'ORIGINALE) ---
-      if (wait > 0) {
-        let m = Math.floor((wait % 3600000) / 60000);
-        let s = Math.floor((wait % 60000) / 1000);
-        infoDiv.innerHTML = `<div class="info-status st-wait">In attesa... ${m}m ${s}s</div>`;
-        actDiv.innerHTML = `<span style="color:#aaa; font-size:16px; font-weight:bold; cursor:pointer;">${r.open ? '▲' : '▼'}</span>`;
-      } else if (isValidNow) {
-        infoDiv.innerHTML = `<div class="info-status st-now">PRONTO</div>`;
-        actDiv.innerHTML = `<span style="color:#aaa; font-size:16px; font-weight:bold; cursor:pointer;">${r.open ? '▲' : '▼'}</span>`;
-      } else {
-        // Scaduto, ricalcoliamo o eliminiamo
-        r.target = null;
-        infoDiv.innerHTML = `<div class="info-status st-wait">SCADUTO</div>`;
-        actDiv.innerHTML = ``;
+      if(!found) {
+        info.innerHTML = "<span class='st-wait'>SCADUTO</span>";
+        act.innerHTML = "";
+        return;
       }
 
-      // --- RENDERING TENDINA CON I DATI DEL TARGET ---
-      if (r.open && r.target) {
-          bodyDiv.className = "st-body open";
-
-          let linksHtml = `
-              <div class="info-sub" style="margin-bottom: 12px; text-align:left;">
-                  <span class="bounce-hl">Rimbalzo: ${bStr}</span><br>
-                  Distanza: <b>${dist}</b> campi<br>
-                  ${delayHtml}
-              </div>
-          `;
-
-          // I link compaiono SOLO SE È PRONTO per evitare false partenze
-          if (isValidNow) {
-              linksHtml += `<div class="target-grid">`;
-              points.forEach((p, idx) => {
-                  let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
-                  linksHtml += `
-                      <div class="target-row-generated">
-                          <a href="${url}" class="link-text">${url}</a>
-                          <a href="${url}" class="lnk-btn-launch" onclick="event.stopPropagation();">LANCIA</a>
-                      </div>
-                  `;
-              });
-              linksHtml += `</div>`;
-          } else {
-              linksHtml += `<div style="text-align:center; padding:15px; color:var(--danger); font-style:italic; font-weight:bold;">I link compariranno qui quando il timer sarà scaduto.</div>`;
-          }
-          
-          linksHtml += `<div class="btn-copri" style="margin-top:15px;" onclick="event.stopPropagation(); covRow(${i})">SEGNA COME COPERTO</div>`;
-          bodyDiv.innerHTML = linksHtml;
+      if(now < found.lStart) {
+        let diff = found.lStart - now;
+        let m = Math.floor(diff/60000), s = Math.floor((diff%60000)/1000);
+        info.innerHTML = `<span class='st-wait'>In attesa... ${m}m ${s}s</span>`;
+        act.innerHTML = "▼";
+        body.innerHTML = ""; 
       } else {
-          bodyDiv.className = "st-body";
+        info.innerHTML = "<span class='st-now'>PRONTO</span>";
+        act.innerHTML = r.open ? "▲" : "▼";
+        if(r.open) renderLinks(i, found);
       }
     }
 
-    function toggleAccordion(i) {
-      if (rows[i].covered) return;
-      rows[i].open = !rows[i].open;
-      renderList();
+    function renderLinks(i, data) {
+      let body = document.getElementById(`body_${i}`);
+      if(body.innerHTML !== "") return;
+
+      let h = `<div class='info-sub'>Distanza: ${data.d} campi | Impatto stimato: ${new Date(data.rStart - data.oneWay).toLocaleTimeString()}</div>`;
+      [ [1,0], [-1,0], [0,1], [0,-1], [1,1] ].forEach(offset => {
+        let nx = myCastle.x + (offset[0]*data.d), ny = myCastle.y + (offset[1]*data.d);
+        let url = `l+k://coordinates?${nx},${ny}&${worldId}`;
+        h += `<div class='target-row-generated'><span style='font-size:10px'>${url}</span><a href='${url}' class='lnk-btn-launch' onclick='cov(${i})'>LANCIA</a></div>`;
+      });
+      h += `<button class='btn' onclick='cov(${i})' style='margin-top:10px'>SEGNA COME COPERTO</button>`;
+      body.innerHTML = h;
     }
 
-    window.covRow = function(i) {
-      rows[i].covered = true;
-      rows[i].open = false; 
-      renderList();
-    };
+    function renderList() {
+      let l = document.getElementById('resList'); l.innerHTML = "";
+      rows.forEach((r, i) => {
+        let row = document.createElement('div');
+        row.className = "res-row" + (r.covered ? " covered" : "");
+        row.onclick = () => { if(!r.covered) { r.open = !r.open; document.getElementById(`body_${i}`).classList.toggle('open'); }};
+        
+        let timeStr = r.t.getHours().toString().padStart(2,'0') + ":" + r.t.getMinutes().toString().padStart(2,'0');
+        row.innerHTML = `<div class='col-time'><div class='t-label'>T${r.turn}</div><div class='t-val'>${timeStr}</div></div><div class='col-info' id='info_${i}'></div><div class='col-action' id='act_${i}'></div>`;
+        l.appendChild(row);
 
-    window.uncovRow = function(i) {
-      rows[i].covered = false;
-      renderList();
-    };
-
-    function reset() { 
-      document.getElementById('inputArea').classList.remove('hidden'); 
-      document.getElementById('resArea').classList.add('hidden'); 
-      if (ticker) clearInterval(ticker); 
+        let body = document.createElement('div'); body.id = `body_${i}`; body.className = "st-body";
+        l.appendChild(body);
+      });
     }
+
+    window.cov = (i) => { rows[i].covered = true; renderList(); };
+    window.reset = () => { clearInterval(ticker); document.getElementById('inputArea').classList.remove('hidden'); document.getElementById('resArea').classList.add('hidden'); };
+    loadGameData();
   </script>
 </body>
 </html>
