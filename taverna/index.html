@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    
+    <title>La Taverna di Re Panza | Minigiochi L&K - L&K Tools Hub</title>
+    <meta name="description" content="Rilassati nella Taverna di Re Panza! Gioca a minigiochi a tempo, scala le classifiche globali e chatta con altri giocatori di Lords & Knights.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="/lord-knighttools/version.js"></script>
+    <script>
+        var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
+        document.write('<link rel="stylesheet" href="/lord-knighttools/common.css?v=' + cacheBuster + '">');
+        
+        // Questo punta al file style.css che è dentro la cartella della taverna, quindi va bene così!
+        document.write('<link rel="stylesheet" href="style.css?v=' + cacheBuster + '">');
+    </script>
+</head>
+
+<body>
+    <div class="top-nav container-lg">
+        <a href="/lord-knighttools/" class="btn-home" data-lang="nav_home">🏠 Torna alla Home</a>
+    </div>
+
+    <div class="page-title container-lg">
+        <h2>🍺 <span data-lang="tav_title">La Taverna di Re Panza</span></h2>
+        <p data-lang="tav_subtitle">Sfida il tempo: hai solo 60 secondi!</p>
+    </div>
+
+    <div class="glass-panel container-lg">
+        <div class="games-grid">
+            <div class="game-card" onclick="openGame('cosciotto')"><div class="icon">🍗</div><h3 data-lang="tav_game_1">Acchiappa il Cosciotto</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('ratti')"><div class="icon">🐭</div><h3 data-lang="tav_game_2">Ratti & Gatti</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('freccette')"><div class="icon">🎯</div><h3 data-lang="tav_game_3">Freccette Ubriache</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('barili')"><div class="icon">🛢️</div><h3 data-lang="tav_game_4">Torre di Barili</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('simon')"><div class="icon">🍺</div><h3 data-lang="tav_game_5">Memoria dell'Oste</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('boccale')"><div class="icon">🛷</div><h3 data-lang="tav_game_6">Lancio del Boccale</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('campanelle')"><div class="icon">🪙</div><h3 data-lang="tav_game_7">Tre Campanelle</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('bevuta')"><div class="icon">🍻</div><h3 data-lang="tav_game_8">Gara di Bevute</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+            <div class="game-card" onclick="openGame('equilibrio')"><div class="icon">⚖️</div><h3 data-lang="tav_game_9">Equilibrio del Cameriere</h3><div class="btn-fake" data-lang="tav_play">GIOCA</div></div>
+        </div>
+    </div> 
+    
+    <div id="gameModal" class="modal-overlay">
+        <div class="modal-content">
+            <button type="button" class="btn-back-game" onclick="closeGame()" data-lang="tav_leave">
+                🔙 Abbandona Partita
+            </button>
+            <div class="game-header-modal">
+                <h2 id="modal-title">GIOCO</h2>
+                <div class="hud">
+                    <span style="border:1px solid var(--gold); padding:2px 8px; border-radius:10px; color:var(--gold);">⏳ <b id="game-timer">60</b>s</span>
+                    <span>Punti: <b id="global-score">0</b></span>
+                    <span>Vite: <b id="global-lives">❤️❤️❤️</b></span>
+                </div>
+            </div>
+            <div id="game-stage"></div>
+            
+            <div id="game-instructions" class="overlay-panel">
+                <h3 data-lang="tav_instructions">📜 Istruzioni</h3><p id="instruction-text"></p>
+                <button onclick="startGameLogic()" class="btn btn-primary" style="margin-top: 10px;">INIZIA (60s)</button>
+            </div>
+            
+            <div id="game-over-panel" class="overlay-panel hidden">
+                <h3 id="end-reason">☠️ PARTITA FINITA!</h3>
+                <p>Punteggio: <b id="final-score-display" style="font-size: 24px; color: var(--success);">0</b></p>
+                <button onclick="resetGame()" class="btn btn-secondary" style="margin-top: 15px;">RIPROVA</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
+        // Puntano alla cartella principale per non raddoppiare i file inutilmente
+        document.write('<script src="/lord-knighttools/common.js?v=' + cacheBuster + '"><\/script>');
+        document.write('<script src="/lord-knighttools/lang.js?v=' + cacheBuster + '"><\/script>');
+        
+        // Questo script è solo della taverna, quindi resta senza percorso (lo cerca nella stessa cartella)
+        document.write('<script src="script.js?v=' + cacheBuster + '"><\/script>');
+    </script>
+</body>
+</html>
