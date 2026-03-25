@@ -4,112 +4,263 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <title>Self Trick Lords & Knights | Calcolatore Difesa - Re Panza</title>
   <meta name="description" content="Calcola i tempi perfetti per il Self Trick su Lords & Knights. Salva le tue truppe coprendo i turni difensivi con precisione millimetrica.">
+  <meta name="keywords" content="self trick lords and knights, l&k self trick, difesa l&k, calcolatore turni difensivi, truppe l&k, schivare attacchi lords and knights">
   <meta name="author" content="Re Panza">
-  
-  <link rel="manifest" href="/lord-knighttools/manifest.json">
-  <link rel="apple-touch-icon" href="/lord-knighttools/icona.png">
-  
+  <link rel="canonical" href="https://re-panza.github.io/lord-knighttools/self_trick/">
+
+  <meta property="og:title" content="Self Trick | L&K Tools Hub">
+  <meta property="og:description" content="Calcola i tempi perfetti per coprire i tuoi turni difensivi e salvare le truppe.">
+  <meta property="og:image" content="https://re-panza.github.io/lord-knighttools/re-panza-intro.png">
+  <meta property="og:url" content="https://re-panza.github.io/lord-knighttools/self_trick/">
+  <meta property="og:type" content="website">
+
   <script src="/lord-knighttools/version.js"></script>
   <script>
-    var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
-    document.write('<link rel="stylesheet" href="/lord-knighttools/common.css?v=' + cacheBuster + '">');
-    document.write('<link rel="stylesheet" href="style.css?v=' + cacheBuster + '">');
-    document.write('<script src="/lord-knighttools/common.js?v=' + cacheBuster + '"><\/script>');
-    document.write('<script src="/lord-knighttools/lang.js?v=' + cacheBuster + '"><\/script>');
+    if (typeof APP_VERSION !== 'undefined') {
+      document.write(`<link rel="manifest" href="/lord-knighttools/manifest.json?v=${APP_VERSION}">`);
+    }
   </script>
+  <link rel="apple-touch-icon" href="/lord-knighttools/icona.png">
+  
+  <link rel="stylesheet" href="/lord-knighttools/common.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    :root {
+      --bg: #0f172a; --card: rgba(17, 28, 51, .85); --card-solid: #111c33;
+      --muted: #93a4c7; --text: #e8eefc; --accent: #60a5fa;
+      --border: rgba(255, 255, 255, .10); --danger: #ef4444; --dangerBg: rgba(239, 68, 68, .12);
+      --gold: #fbbf24; --green: #34d399; --blue: #60a5fa; --selected-bg: rgba(251, 191, 36, 0.1);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top right, rgba(96, 165, 250, 0.12), transparent 50%), 
+                  radial-gradient(circle at bottom left, rgba(52, 211, 153, 0.08), transparent 50%), 
+                  var(--bg);
+      color: var(--text); padding: calc(env(safe-area-inset-top, 0px) + 24px) 20px 80px 20px;
+      -webkit-user-select: none; user-select: none;
+    }
+
+    input, select, .mono, .value { -webkit-user-select: text; user-select: text; }
+
+    .wrap { max-width: 980px; margin: 0 auto; }
+    
+    .top-nav { max-width: 980px; margin: 0 auto 10px auto; display: flex; justify-content: space-between; align-items: center; }
+    .home-link { text-decoration: none; color: var(--accent); font-weight: bold; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+    
+    header { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; }
+    .title h1 { font-size: 24px; margin: 0; color: #fff; font-weight: 800; }
+
+    .card { background: var(--card-solid); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); margin-bottom: 20px; }
+    .row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .col { flex: 1; }
+
+    label { color: var(--muted); font-size: 12px; text-transform: uppercase; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+    input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255, 255, 255, .04); color: var(--text); outline: none; font-size: 15px; font-weight: bold; }
+    select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background-color: rgba(255, 255, 255, .04); color: var(--text); outline: none; font-size: 15px; font-weight: bold; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2393a4c7%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 12px auto; }
+    select option { background-color: #ffffff; color: #000000; }
+    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(96, 165, 250, .20); }
+
+    .habitat-selector { display: flex; gap: 8px; margin-bottom: 16px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 12px; border: 1px solid var(--border); }
+    .hab-opt { flex: 1; text-align: center; }
+    .hab-opt input { display: none; }
+    .hab-opt span { display: block; padding: 8px 0; font-size: 12px; font-weight: bold; color: var(--muted); cursor: pointer; border-radius: 8px; transition: 0.2s; }
+    .hab-opt input:checked+span { background: rgba(96, 165, 250, .15); color: #fff; border: 1px solid var(--accent); }
+
+    .bonus-area { background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); display: none; }
+    .bonus-area.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .chk-label { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text); cursor: pointer; }
+    .chk-label input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); }
+
+    .section-separator { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+    .sec-title { color: var(--gold); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+    
+    .bounce-window-config { background: rgba(96, 165, 250, 0.05); padding: 10px; border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.2); margin-bottom: 12px; position: relative; }
+
+    .btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, .5); background: rgba(251, 191, 36, .15); color: var(--gold); font-weight: 700; text-transform: uppercase; font-size: 15px; cursor: pointer; margin-top: 8px; transition: 0.2s; }
+    .btn:active { background: rgba(251, 191, 36, .3); }
+    .hidden { display: none !important; }
+
+    .res-header-info { text-align: center; font-size: 14px; color: var(--muted); padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 12px 12px 0 0; border: 1px solid var(--border); border-bottom: none; }
+    .res-header-info a { color: var(--accent); text-decoration: none; font-weight: bold; font-family: monospace; display: block; margin: 4px 0; word-break: break-all; font-size: 12px; }
+    .res-header-info b { color: #fff; font-size: 15px; }
+
+    .quick-bar { background: var(--card-solid); padding: 10px; border: 1px solid var(--border); border-top: none; display: flex; gap: 10px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+    .back-btn { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid var(--border); padding: 0 16px; font-weight: bold; border-radius: 8px; font-size: 18px; cursor: pointer; }
+
+    #resList { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-top: none; border-radius: 0 0 16px 16px; overflow: hidden; }
+    
+    /* MODIFICA PER ACCORDION: Manteniamo la struttura visiva del tuo res-row */
+    .res-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); background: transparent; transition: background 0.2s; cursor: pointer; }
+    .res-row:last-child { border-bottom: none; }
+    .res-row:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+    .res-row:hover { background: rgba(255, 255, 255, 0.05); }
+    .res-row.covered { background: rgba(52, 211, 153, 0.15) !important; border-left: 3px solid var(--green); }
+
+    .col-time { text-align: center; border-right: 1px solid var(--border); padding-right: 15px; min-width: 60px; }
+    .t-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+    .t-val { font-size: 16px; color: #fff; font-weight: 700; }
+    
+    .col-info { flex: 1; padding-left: 15px; text-align: right; }
+    .info-status { font-size: 14px; font-weight: bold; margin-bottom: 3px; }
+    
+    .col-action { display: flex; align-items: center; justify-content: center; padding-left: 15px; }
+
+    .btn-copri { display: flex; align-items: center; justify-content: center; width: 100%; height: 32px; background: rgba(52, 211, 153, 0.15); border: 1px solid var(--green); color: var(--green); font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+    .btn-copri:active { background: var(--green); color: #000; }
+    .btn-scopri { display: flex; align-items: center; justify-content: center; padding: 0 15px; height: 32px; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin-left:10px; }
+    .btn-scopri:active { background: var(--danger); color: #fff; }
+
+    .st-now { color: var(--green); animation: pulse 1s infinite; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
+    .st-wait { color: var(--danger); font-weight: bold; }
+    .st-covered-text { color: var(--green); font-weight: bold; }
+    @keyframes pulse { 50% { opacity: 0.6; } }
+    
+    .container-wide { max-width: 980px; margin: 0 auto; }
+
+    #tour-st-1, #tour-st-2, #tour-st-3, #tour-st-5, #tour-st-6, #tour-st-4 {
+        background: #1e293b; 
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 15px;
+    }
+
+  </style>
+
 </head>
 
 <body>
 
   <div class="top-nav container-wide">
-    <a href="/lord-knighttools/" class="home-link" data-lang="nav_home">🏠 Torna alla Home</a>
+    <a href="/lord-knighttools/" class="home-link">🏠 Torna alla Home</a>
   </div>
 
   <div class="page-title container-wide">
-    <h2>⚔️ <span data-lang="st_title">Self Trick</span></h2>
+    <h2>⚔️ <span>Self Trick</span></h2>
   </div>
 
   <div id="inputArea" class="card container-wide">
-    <div class="row">
+    <div class="row" id="tour-st-1" style="margin-bottom: 0;">
       <div class="col">
-        <label data-lang="st_label_link">🎯 Link castello attaccato</label>
-        <input type="text" id="inCoord" placeholder="l+k://coordinates?x,y&337" oninput="parseInputLink()">
+        <label>🎯 Link castello attaccato</label>
+        <input type="text" id="inCoord" placeholder="l+k://coordinates?x,y&337" oninput="extractWorld()">
       </div>
     </div>
 
-    <div class="row">
-      <div class="col"><label data-lang="st_label_date">📅 Inizio Battaglia</label><input type="date" id="inDate"></div>
-      <div class="col"><label data-lang="st_label_time">⏱️ Ora Inizio</label><input type="time" id="inTime" step="60"></div>
+    <div class="row" id="tour-st-2" style="margin-bottom: 0;">
+      <div class="col"><label>📅 Inizio Battaglia</label><input type="date" id="inDate"></div>
+      <div class="col"><label>⏱️ Ora Inizio</label><input type="time" id="inTime" step="60"></div>
     </div>
 
     <div id="areaBonusPaese" class="bonus-area" style="background: rgba(96, 165, 250, 0.1); border-color: var(--accent);">
-      <label style="color:var(--accent); font-weight:bold;" data-lang="st_bonus_country">Bonus Velocità Paese (Sentieri di Ghiaia)</label>
-      <select id="selCountryBonus">
+      <label style="color:var(--accent); font-weight:bold;">Bonus Velocità Paese (Sentieri di Ghiaia)</label>
+      <select id="selCountryBonus" onchange="forceRecalc()">
         <option value="1">Nessuno (100%)</option>
       </select>
     </div>
 
-    <div>
-      <label data-lang="st_hab_start">Habitat Partenza</label>
+    <div id="tour-st-3" style="margin-bottom: 0;">
+      <label>Habitat Partenza</label>
       <div class="habitat-selector">
-        <label class="hab-opt"><input type="radio" name="hab" value="castello" checked onchange="updateUI()"><span data-lang="st_hab_castle">Castello</span></label>
-        <label class="hab-opt"><input type="radio" name="hab" value="fortezza" onchange="updateUI()"><span data-lang="st_hab_fortress">Fortezza</span></label>
-        <label class="hab-opt"><input type="radio" name="hab" value="citta" onchange="updateUI()"><span data-lang="st_hab_city">Città</span></label>
-        <label class="hab-opt"><input type="radio" name="hab" value="metropoli" onchange="updateUI()"><span data-lang="st_hab_metro">Metropoli</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="castello" checked onchange="updateUI()"><span >Castello</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="fortezza" onchange="updateUI()"><span>Fortezza</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="citta" onchange="updateUI()"><span>Città</span></label>
+        <label class="hab-opt"><input type="radio" name="hab" value="metropoli" onchange="updateUI()"><span>Metropoli</span></label>
       </div>
 
       <div id="optCastello" class="bonus-area active">
-        <label class="chk-label"><input type="checkbox" id="chkMap"> <span data-lang="st_chk_map">Mappa dell'Area (+5%)</span></label>
-        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventCastello"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+        <label class="chk-label"><input type="checkbox" id="chkMap" onchange="forceRecalc()"> <span>Mappa dell'Area (+5%)</span></label>
+        <div class="section-separator">
+          <span class="sec-title">Eventi Speciali</span>
+          <select id="selEventCastello" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
+        </div>
       </div>
+
       <div id="optFortezza" class="bonus-area">
-        <label class="chk-label"><input type="checkbox" id="chkBussola"> <span data-lang="st_chk_compass">Bussola (+5%)</span></label>
-        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventFortezza"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+        <label class="chk-label"><input type="checkbox" id="chkBussola" onchange="forceRecalc()"> <span>Bussola (+5%)</span></label>
+        <div class="section-separator">
+          <span class="sec-title">Eventi Speciali</span>
+          <select id="selEventFortezza" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
+        </div>
       </div>
+
       <div id="optCitta" class="bonus-area">
-        <div class="row" style="margin:0"><div class="col"><label style="color:#fff">Livello Caserma (1-30)</label><select id="selCityLvl"></select></div></div>
-        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventCitta"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+        <div class="row" style="margin:0">
+          <div class="col">
+            <label style="color:#fff">Livello Caserma (1-30)</label>
+            <select id="selCityLvl" onchange="forceRecalc()"></select>
+          </div>
+        </div>
+        <div class="section-separator">
+          <span class="sec-title">Eventi Speciali</span>
+          <select id="selEventCitta" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
+        </div>
       </div>
+
       <div id="optMetropoli" class="bonus-area">
-        <div class="row" style="margin:0"><div class="col"><label style="color:#fff">Livello Accademia (1-30)</label><select id="selMetropoliLvl"></select></div></div>
-        <div style="margin-top:8px"><label class="chk-label"><input type="checkbox" id="chkManovra"> <span>Manovra di fianco (+10%)</span></label></div>
-        <div class="section-separator"><span class="sec-title" data-lang="st_sec_events">Eventi Speciali</span><select id="selEventMetropoli"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select></div>
+        <div class="row" style="margin:0">
+          <div class="col">
+            <label style="color:#fff">Livello Accademia (1-30)</label>
+            <select id="selMetropoliLvl" onchange="forceRecalc()"></select>
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <label class="chk-label"><input type="checkbox" id="chkManovra" onchange="forceRecalc()"> <span>Manovra di fianco (+10%)</span></label>
+        </div>
+        <div class="section-separator">
+          <span class="sec-title">Eventi Speciali</span>
+          <select id="selEventMetropoli" onchange="forceRecalc()"><option value="0">Nessuno</option><option value="100">🚀 Velocità 100%</option></select>
+        </div>
       </div>
     </div>
 
-    <div class="bounce-window-config">
-      <label style="text-transform:none; line-height:1.2; margin-bottom:8px; color:var(--text)" data-lang="st_window_title">Finestra di Rientro (Minuti prima della fine del turno)</label>
+    <div class="bounce-window-config" id="tour-st-4" style="margin-bottom: 0;">
+      <label style="text-transform:none; line-height:1.2; margin-bottom:8px; color:var(--text)">Finestra di Rientro (Minuti prima della fine del turno)</label>
       <div style="display:flex; gap:10px; align-items:center;">
-        <div style="flex:1"><label data-lang="st_window_from">Da (Min prima)</label><select id="selBounceMax" onchange="updateBounceLimits()"></select></div>
-        <div style="flex:1"><label data-lang="st_window_to">A (Min prima)</label><select id="selBounceMin" onchange="forceRecalc()"></select></div>
+        <div style="flex:1">
+          <label>Da (Min prima)</label>
+          <select id="selBounceMax" onchange="updateBounceLimits()"></select>
+        </div>
+        <div style="flex:1">
+          <label>A (Min prima)</label>
+          <select id="selBounceMin" onchange="forceRecalc()"></select>
+        </div>
       </div>
     </div>
     
-    <div class="row">
-      <div class="col" style="flex:2"><label data-lang="st_troop">Truppa</label><select id="selTroop"></select></div>
-      <div class="col"><label data-lang="st_batch">Plotone</label><select id="selBatch"></select></div>
+    <div class="row" id="tour-st-5" style="margin-bottom: 0;">
+      <div class="col" style="flex:2"><label>Truppa</label><select id="selTroop"></select></div>
+      <div class="col"><label>Plotone</label><select id="selBatch"></select></div>
     </div>
 
-    <div class="row">
+    <div class="row" id="tour-st-6" style="margin-bottom: 0;">
       <div style="width:100%">
         <div style="margin-bottom:8px;">
           <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
             <input type="checkbox" id="chkDelay" onchange="syncDelay('chkDelay')">
-            <span data-lang="st_chk_delay">⏱️ Ritardo Dinamico (0% - 5%)</span>
+            <span>⏱️ Ritardo Dinamico (0% - 5%)</span>
           </label>
         </div>
-        <label data-lang="st_troops_total">Truppe Totali</label>
+        <label>Truppe Totali</label>
         <input type="number" id="inGarrison" style="text-align:center" placeholder="Es. 1000">
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="startCalc()" data-lang="st_calc_btn">CALCOLA</button>
+    <button class="btn btn-primary" onclick="startCalc()" id="tour-st-7">CALCOLA</button>
+    
   </div> 
   
   <div id="resArea" class="hidden card container-wide" style="padding:0; overflow:hidden;">
@@ -119,33 +270,34 @@
       <button class="back-btn" onclick="reset()">🔙</button>
       <select id="selBattleTroop" onchange="forceRecalc()" style="margin-bottom: 0;"></select>
       
-      <div style="display:flex; align-items:center; margin-left:auto;">
+      <div id="delay-res-container" style="display:flex; align-items:center; margin-left:auto;">
         <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items:center; gap: 5px; cursor: pointer; font-size: 11px; padding: 4px 8px; background: rgba(251, 191, 36, 0.1); border: 1px solid var(--gold); border-radius: 6px;">
           <input type="checkbox" id="chkDelayRes" onchange="syncDelay('chkDelayRes')">
-          <span data-lang="st_chk_delay_res">⏱️ Ritardo</span>
+          <span>⏱️ Ritardo</span>
         </label>
       </div>
+
     </div>
 
     <div id="resList"></div>
   </div>
 
   <script>
-    function getStText(key) {
-        const l = localStorage.getItem('lingua_scelta') || 'it';
-        if (typeof window.translations !== 'undefined' && window.translations[l] && window.translations[l][key]) {
-            return window.translations[l][key];
+    // Finto parser in caso common.js non fosse caricato in tempo
+    if (typeof window.parseLK === 'undefined') {
+        window.parseLK = function(val) {
+            let m = val.match(/x=([0-9]+).*?y=([0-9]+)/i) || val.match(/([0-9]+),([0-9]+)/);
+            if(m) return { x: parseInt(m[1]), y: parseInt(m[2]), w: val.split('&')[1] || "337" };
+            return null;
         }
-        return key; 
     }
 
     let GAME_DATA = null;
-    let myCastle = null, worldId = null; 
+    let myCastle = null, worldId = "337"; 
     let rows = [], ticker = null;
 
     async function loadGameData() {
       try {
-        // Pesca le velocità direttamente dalla cartella principale
         let response = await fetch('/lord-knighttools/database_truppe.json?v=' + Date.now());
         if (!response.ok) throw new Error("HTTP Error");
         const json = await response.json();
@@ -153,7 +305,7 @@
         initUI();
       } catch (e) {
         console.error(e);
-        alert("Errore caricamento database_truppe.json: " + e.message);
+        alert("Errore database truppe: " + e.message);
       }
     }
 
@@ -203,6 +355,16 @@
       if (!isInit) forceRecalc();
     }
 
+    function extractWorld() {
+      let val = document.getElementById('inCoord').value;
+      let lk = window.parseLK(val);
+      if (lk && lk.w) {
+        worldId = lk.w;
+        if (worldId === "327") document.getElementById('areaBonusPaese').classList.add('active');
+        else { document.getElementById('areaBonusPaese').classList.remove('active'); document.getElementById('selCountryBonus').value = "1"; }
+      }
+    }
+
     function updateUI() {
       if (!GAME_DATA) return;
       let habRadio = document.querySelector('input[name="hab"]:checked');
@@ -220,16 +382,6 @@
           let opt = document.createElement('option'); opt.value = val; opt.innerText = val; batchSelect.appendChild(opt);
         });
         if(v) batchSelect.value = v;
-      }
-    }
-
-    function parseInputLink() {
-      let val = document.getElementById('inCoord').value;
-      let lk = window.parseLK ? window.parseLK(val) : null;
-      if (lk && lk.w) {
-        worldId = lk.w;
-        if (worldId === "327") document.getElementById('areaBonusPaese').classList.add('active');
-        else { document.getElementById('areaBonusPaese').classList.remove('active'); document.getElementById('selCountryBonus').value = "1"; }
       }
     }
 
@@ -272,17 +424,18 @@
     }
 
     function forceRecalc() {
-      renderList();
+      if (rows.length > 0) renderList();
     }
 
     function startCalc() {
-      let lk = window.parseLK ? window.parseLK(document.getElementById('inCoord').value) : null;
+      let lk = window.parseLK(document.getElementById('inCoord').value);
       if (!lk || lk.x === undefined || lk.y === undefined) return alert("Inserisci un link castello valido!");
       
       myCastle = { x: parseInt(lk.x), y: parseInt(lk.y) };
       let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
       if (!dVal || !tVal) return alert("Inserisci data e ora!");
       let startT = new Date(dVal + "T" + tVal);
+      if (startT < new Date(Date.now() - 60000)) return alert("Data nel passato!");
       
       let garrison = parseInt(document.getElementById('inGarrison').value);
       if (!garrison || garrison < 100) return alert("Inserisci un numero valido di truppe!");
@@ -312,7 +465,7 @@
       renderList();
     }
 
-    // GENERAZIONE BERSAGLI ALLA CIECA (MATEMATICA PURA)
+    // --- MOTORE MATEMATICO ALLA CIECA ---
     function generateBlindTargets(turnEndTime, speed) {
         let now = Date.now();
         let minOff = parseInt(document.getElementById('selBounceMin').value || "3");
@@ -320,18 +473,19 @@
         let rStart = turnEndTime.getTime() - (maxOff * 60000);
         let rEnd = turnEndTime.getTime() - (minOff * 60000);
 
-        // Il punto ideale di arrivo è a metà della finestra
         let targetReturn = (rStart + rEnd) / 2;
-        let travelTime = (targetReturn - now) / 2; // Viaggio di sola andata in ms
         
+        let isDelayEnabled = document.getElementById('chkDelay').checked;
+        let delayMultiplier = isDelayEnabled ? 1.05 : 1.0; 
+        
+        let travelTime = (targetReturn - now) / (1 + delayMultiplier); 
         let dist = Math.round(travelTime / (speed * 1000));
         
-        if (dist < 1) return null; // Tempo scaduto, distanza impossibile
+        if (dist < 1) return null; // Scaduto!
 
         let cx = myCastle.x;
         let cy = myCastle.y;
         
-        // Genera 5 punti cardinali a distanza 'dist'
         let points = [
             { x: cx + dist, y: cy },
             { x: cx - dist, y: cy },
@@ -340,9 +494,7 @@
             { x: cx + Math.round(dist * 0.7), y: cy + Math.round(dist * 0.7) }
         ];
         
-        // Assicuriamoci che non esistano coordinate negative
         points = points.map(p => ({ x: Math.max(0, p.x), y: Math.max(0, p.y) }));
-        
         return { dist: dist, points: points };
     }
 
@@ -359,29 +511,35 @@
       el.innerHTML = "";
       rows.forEach((r, i) => {
         let div = document.createElement('div');
-        div.className = "st-accordion" + (r.covered ? " covered" : "") + (r.open ? " open" : "");
-        div.id = `row_${i}`;
-        
         let label = `Turno ${r.turnNum}`;
         let timeStr = `${pD(r.t.getHours())}:${pD(r.t.getMinutes())}`;
 
         if (r.type === 'garrison') {
-          div.innerHTML = `
-            <div class="st-header">
-               <div><b>${label}</b> <span style="color:#aaa; font-size:12px; margin-left:8px;">${timeStr}</span></div>
-               <div style="color:var(--green); font-weight:bold;">Guarnigione fissa</div>
-            </div>`;
+            div.className = "res-row covered";
+            div.innerHTML = `
+                <div class="col-time"><div class="t-label">${label}</div><div class="t-val">${timeStr}</div></div>
+                <div class="col-info"><span class="st-covered-text">Guarnigione fissa</span></div>
+                <div class="col-action"></div>
+            `;
         } else {
-          div.innerHTML = `
-            <div class="st-header" onclick="toggleAccordion(${i})">
-               <div><b>${label}</b> <span style="color:#aaa; font-size:12px; margin-left:8px;">${timeStr}</span></div>
-               <div id="status_${i}" class="st-status">Calcolo...</div>
-            </div>
-            <div class="st-body" id="body_${i}"></div>
-          `;
+            div.className = "res-row" + (r.covered ? " covered" : "");
+            div.onclick = () => toggleAccordion(i);
+            
+            div.innerHTML = `
+                <div class="col-time"><div class="t-label">${label}</div><div class="t-val">${timeStr}</div></div>
+                <div class="col-info" id="status_${i}">Calcolo...</div>
+                <div class="col-action"><span style="color:#aaa;">${r.open ? '▲' : '▼'}</span></div>
+            `;
+            
+            let bodyDiv = document.createElement('div');
+            bodyDiv.className = "st-body";
+            bodyDiv.id = `body_${i}`;
+            bodyDiv.style.display = r.open && !r.covered ? 'block' : 'none';
+            
+            el.appendChild(div);
+            el.appendChild(bodyDiv);
+            updateRowData(i, true);
         }
-        el.appendChild(div);
-        if(r.type !== 'garrison') updateRowData(i, true);
       });
     }
 
@@ -398,8 +556,11 @@
       if (!statusDiv || !bodyDiv) return;
 
       if (r.covered) {
-          statusDiv.innerHTML = `<span style="color:var(--green); font-weight:bold;">COPERTO</span> <button class="btn-scopri" onclick="event.stopPropagation(); uncovRow(${i})">SCOPRI</button>`;
+          statusDiv.innerHTML = `<span class="st-covered-text">COPERTO</span>`;
           bodyDiv.style.display = 'none';
+          
+          let actionCol = statusDiv.nextElementSibling;
+          actionCol.innerHTML = `<button class="btn-scopri" onclick="event.stopPropagation(); uncovRow(${i})">SCOPRI</button>`;
           return;
       }
 
@@ -407,16 +568,15 @@
       let targetData = generateBlindTargets(r.t, speed);
 
       if (!targetData) {
-          statusDiv.innerHTML = `<span style="color:var(--danger); font-weight:bold;">SCADUTO</span>`;
+          statusDiv.innerHTML = `<span class="st-wait">SCADUTO</span>`;
           bodyDiv.innerHTML = `<div style="text-align:center; padding:10px; color:var(--danger);">Non c'è più tempo per questo turno.</div>`;
           return;
       }
 
-      // È valido! Mostriamo PRONTO e la freccetta
-      let arrow = r.open ? "▲" : "▼";
-      statusDiv.innerHTML = `<span class="st-now">PRONTO</span> <span style="color:#aaa; margin-left:10px; font-size:12px;">${arrow}</span>`;
+      statusDiv.innerHTML = `<span class="st-now">PRONTO</span>`;
+      let actionCol = statusDiv.nextElementSibling;
+      actionCol.innerHTML = `<span style="color:#aaa;">${r.open ? '▲' : '▼'}</span>`;
 
-      // Aggiorniamo i link solo se la distanza è cambiata per non far sfarfallare i bottoni o se forzato
       if (forceRenderBody || r.lastDist !== targetData.dist) {
           r.lastDist = targetData.dist;
           
@@ -436,14 +596,14 @@
     }
 
     function toggleAccordion(i) {
-      if (rows[i].covered) return; // Se è coperto non si apre la tendina
+      if (rows[i].covered) return;
       rows[i].open = !rows[i].open;
       renderList();
     }
 
     window.covRow = function(i) {
       rows[i].covered = true;
-      rows[i].open = false; // Chiude la tendina
+      rows[i].open = false; 
       renderList();
     };
 
