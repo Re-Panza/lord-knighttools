@@ -26,16 +26,18 @@
   <meta name="twitter:description" content="Calcola i tempi perfetti per coprire i tuoi turni difensivi.">
   <meta name="twitter:image" content="https://repanzatools.eu/re-panza-intro.png">
 
-  <script src="/version.js"></script>
+  <script src="/lord-knighttools/version.js"></script>
   <script>
     if (typeof APP_VERSION !== 'undefined') {
-      document.write(`<link rel="manifest" href="/manifest.json?v=${APP_VERSION}">`);
+      document.write(`<link rel="manifest" href="/lord-knighttools/manifest.json?v=${APP_VERSION}">`);
     }
+    var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
+    document.write('<link rel="stylesheet" href="/lord-knighttools/common.css?v=' + cacheBuster + '">');
+    document.write('<link rel="stylesheet" href="style.css?v=' + cacheBuster + '">');
+    document.write('<script src="/lord-knighttools/common.js?v=' + cacheBuster + '"><\/script>');
+    document.write('<script src="/lord-knighttools/lang.js?v=' + cacheBuster + '"><\/script>');
   </script>
-  <link rel="apple-touch-icon" href="/icona.png">
-  
-  <link rel="stylesheet" href="/common.css">
-  <link rel="stylesheet" href="/stile.css">
+  <link rel="apple-touch-icon" href="/lord-knighttools/icona.png">
 
   <style>
     :root {
@@ -120,9 +122,9 @@
     .info-sub { font-size: 12px; color: var(--muted); line-height: 1.3; }
     .info-sub span { color: #ccc; }
     .bounce-hl { color: var(--gold) !important; font-weight: bold; }
-    .col-action { display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center;}
+    .col-action { display: flex; flex-direction: column; gap: 6px; }
 
-    .lnk-btn-launch { display: flex; align-items: center; justify-content: center; width: 100%; height: 32px; background: rgba(251, 191, 36, 0.15); border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; user-select: none; margin-bottom: 5px; }
+    .lnk-btn-launch { display: flex; align-items: center; justify-content: center; width: 100%; height: 32px; background: rgba(251, 191, 36, 0.15); border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; user-select: none; }
     .lnk-btn-launch:active { background: var(--gold); color: #000; transform: scale(0.95); }
     
     .btn-copri { display: flex; align-items: center; justify-content: center; width: 100%; height: 32px; background: rgba(52, 120, 211, 0.15); border: 1px solid var(--accent); color: var(--accent); font-size: 12px; font-weight: bold; border-radius: 8px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
@@ -142,8 +144,6 @@
     @keyframes pulse { 50% { opacity: 0.6; } }
     
     .container-wide { max-width: 980px; margin: 0 auto; }
-    .ad-container-reserved { min-height: 50px; display: flex; justify-content: center; align-items: center; width: 100%; margin-bottom: 20px; overflow: hidden; }
-    .bottom-ad-container { width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 20px; }
 
     #tour-st-1, #tour-st-2, #tour-st-3, #tour-st-5, #tour-st-6, #tour-st-4 {
         background: #1e293b; 
@@ -155,24 +155,7 @@
         z-index: 1; 
     }
 
-    .premium-container { position: relative; }
-    .premium-glass {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(15, 23, 42, 0.3);
-        z-index: 10; display: flex; align-items: center; justify-content: center;
-        border-radius: inherit; cursor: pointer; transition: background 0.3s;
-    }
-    .premium-glass:hover { background: rgba(15, 23, 42, 0.1); }
-    .lock-icon {
-        font-size: 26px; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8));
-        animation: floatLock 2s infinite ease-in-out;
-    }
-    @keyframes floatLock {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-    }
-
-    /* NUOVE CLASSI PER LA TENDINA DEL MOTORE ALLA CIECA */
+    /* CLASSI PER LA TENDINA DEL MOTORE ALLA CIECA */
     .st-body { display: none; padding: 15px; background: rgba(0,0,0,0.4); border-top: 1px dashed rgba(255,255,255,0.05); grid-column: 1 / -1; }
     .st-body.open { display: block; animation: slideDown 0.2s ease-out; }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -186,7 +169,7 @@
 <body>
 
   <div class="top-nav container-wide">
-    <a href="/" class="home-link" data-lang="nav_home">🏠 Torna alla Home</a>
+    <a href="/lord-knighttools/" class="home-link" data-lang="nav_home">🏠 Torna alla Home</a>
     <div class="faq-menu-wrapper">
         <button class="faq-btn" onclick="window.toggleFaqMenu(event)" data-lang="nav_faq_link">❓ F.A.Q.</button>
     </div>
@@ -194,10 +177,6 @@
 
   <div class="page-title container-wide">
     <h2>⚔️ <span data-lang="st_title">Self Trick</span></h2>
-  </div>
-
-  <div class="ad-container-reserved container-wide">
-      <div id="ad-slot-top"></div>
   </div>
 
   <div id="inputArea" class="card container-wide">
@@ -300,10 +279,7 @@
       </div>
     </div>
 
-    <div class="bounce-window-config premium-container" id="tour-st-4" style="margin-bottom: 0;">
-      <div class="premium-glass glass-rimbalzo" onclick="unlockPremiumTools('rimbalzo')">
-          <div class="lock-icon">🔒</div>
-      </div>
+    <div class="bounce-window-config" id="tour-st-4" style="margin-bottom: 0;">
       <label style="text-transform:none; line-height:1.2; margin-bottom:8px; color:var(--text)" data-lang="st_window_title">
         Finestra di Rientro (Minuti prima della fine del turno)
       </label>
@@ -327,10 +303,7 @@
     <div class="row" id="tour-st-6" style="margin-bottom: 0;">
       <div style="width:100%">
         
-        <div style="margin-bottom:8px; position:relative;" class="premium-container" id="delay-container">
-          <div class="premium-glass glass-ritardo" style="border-radius: 8px;" onclick="unlockPremiumTools('ritardo')">
-              <div class="lock-icon" style="font-size:18px;">🔒</div>
-          </div>
+        <div style="margin-bottom:8px; position:relative;" id="delay-container">
           <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
             <input type="checkbox" id="chkDelay" onchange="syncDelay('chkDelay')">
             <span data-lang="st_chk_delay">⏱️ Ritardo Dinamico (0% - 5%)</span>
@@ -353,7 +326,7 @@
       <button class="back-btn" onclick="reset()">🔙</button>
       <select id="selBattleTroop" onchange="changeTroopLive()" style="margin-bottom: 0;"></select>
       
-      <div id="delay-res-container" style="display:none; align-items:center; margin-left:auto;">
+      <div id="delay-res-container" style="display:flex; align-items:center; margin-left:auto;">
         <label class="chk-label" style="font-weight:bold; color:var(--gold); display: inline-flex; align-items:center; gap: 5px; cursor: pointer; font-size: 11px; padding: 4px 8px; background: rgba(251, 191, 36, 0.1); border: 1px solid var(--gold); border-radius: 6px;">
           <input type="checkbox" id="chkDelayRes" onchange="syncDelay('chkDelayRes')">
           <span data-lang="st_chk_delay_res">⏱️ Ritardo</span>
@@ -364,30 +337,6 @@
 
     <div id="resList"></div>
   </div>
-
-  <div class="bottom-ad-container container-wide">
-      <div id="ad-slot-bottom"></div>
-  </div>
-
-  <script>
-      var cacheBuster = typeof APP_VERSION !== 'undefined' ? APP_VERSION : new Date().getTime();
-      document.write('<script src="/common.js?v=' + cacheBuster + '"></scr' + 'ipt>');
-      document.write('<script src="/lang.js?v=' + cacheBuster + '"></scr' + 'ipt>');
-      document.write('<script src="/premium.js?v=' + cacheBuster + '"></scr' + 'ipt>');
-  </script>
-
-  <script type="module">
-      import myAdsManager from '/ads-manager.js';
-      
-      document.addEventListener('DOMContentLoaded', () => {
-          const isVip = myAdsManager.isPaidVIP();
-          if (!isVip) {
-              myAdsManager.initGlobalAds();
-              myAdsManager.loadIframeBanner('728x90', 'ad-slot-top');
-              myAdsManager.loadIframeBanner('300x250', 'ad-slot-bottom');
-          }
-      });
-  </script>
 
   <script>
     // FORMULA DISTANZA 3 COORDINATE
@@ -428,60 +377,6 @@
         localStorage.setItem('st_saved_state', JSON.stringify(state));
     };
 
-    function unlockPremiumTools(featureId) {
-        if (typeof window.myPremiumManager === 'undefined') return;
-
-        const originalShow = window.myPremiumManager.showModal.bind(window.myPremiumManager);
-        
-        window.myPremiumManager.showModal = function(cb, fId) {
-            originalShow(cb, fId);
-            setTimeout(() => {
-                let title = document.getElementById('premium-modal-title');
-                let desc = document.getElementById('premium-modal-desc');
-                
-                if(desc && title) {
-                    let lang = window.myPremiumManager.getLang();
-                    let trans = window.translations && window.translations[lang] ? window.translations[lang] : window.translations['it'];
-                    
-                    if (featureId === 'rimbalzo' && trans['st_premium_bounce']) {
-                        title.style.display = 'none'; 
-                        desc.innerHTML = trans['st_premium_bounce'];
-                    } else if (featureId === 'ritardo' && trans['st_premium_delay']) {
-                        title.style.display = 'none';
-                        desc.innerHTML = trans['st_premium_delay'];
-                    }
-                    
-                    desc.style.textAlign = "left";
-                    desc.style.fontSize = "14px";
-                }
-            }, 50); 
-        };
-
-        window.myPremiumManager.requirePremium(function() {
-            document.querySelectorAll('.glass-' + featureId).forEach(el => el.remove());
-            window.myPremiumManager.showModal = originalShow; 
-            
-            const resArea = document.getElementById('resArea');
-            if (resArea && !resArea.classList.contains('hidden')) {
-                changeTroopLive(); 
-            }
-        }, featureId); 
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        if (window.myPremiumManager) {
-            if (window.myPremiumManager.isPremiumUser()) {
-                window.myPremiumManager.destroyAllPremiumLocks();
-            } else {
-                if (window.myPremiumManager.isFeatureUnlocked('rimbalzo')) {
-                    document.querySelectorAll('.glass-rimbalzo').forEach(el => el.remove());
-                }
-                if (window.myPremiumManager.isFeatureUnlocked('ritardo')) {
-                    document.querySelectorAll('.glass-ritardo').forEach(el => el.remove());
-                }
-            }
-        }
-    });
 
     function startSelfTrickTour(force = false) {
         if (typeof window.RePanzaTour === 'undefined') return;
@@ -505,18 +400,19 @@
     let MAP_DATA = {};
     let myCastle = null, worldId = null; 
     let rows = [], ticker = null;
-    let selectedRowIndex = -1;
 
     async function loadGameData() {
       try {
-        let response = await fetch('/lk_database/database_truppe.json?v=' + Date.now());
+        // CARICA DA LORD-KNIGHTTOOLS COME RICHIESTO!
+        let response = await fetch('/lord-knighttools/database_truppe.json?v=' + Date.now());
         if (!response.ok) throw new Error("HTTP Error: " + response.status);
         const json = await response.json();
         GAME_DATA = (json && json.game_config) ? json.game_config : json;
         if (!GAME_DATA) throw new Error("Empty or invalid JSON");
         
         try {
-            let mapResponse = await fetch('/lk_database/mappe_mondi.json?v=' + Date.now());
+            // CARICA IL QUADERNO DELLE MAPPE
+            let mapResponse = await fetch('/lord-knighttools/mappe_mondi.json?v=' + Date.now());
             if (mapResponse.ok) {
                 MAP_DATA = await mapResponse.json();
             }
@@ -556,30 +452,30 @@
 
     function updatePlaceholders() {
         let inGarrison = document.getElementById('inGarrison');
-        if(inGarrison) inGarrison.placeholder = getStText('st_ph_garrison');
+        if(inGarrison) inGarrison.placeholder = getStText('st_ph_garrison') || "Es. 1000";
     }
 
     function initUI() {
       let htmlT = "";
       TROOPS_UI.forEach(t => { 
           let tName = getStText('troop_' + t.key.replace(/\s+/g, '_').replace(/\./g, '').toLowerCase());
-          htmlT += `<option value="${t.key}">${tName}</option>`; 
+          htmlT += `<option value="${t.key}">${tName || t.key}</option>`; 
       });
       let st = document.getElementById('selTroop'); if(st) { let v = st.value; st.innerHTML = htmlT; if(v) st.value = v; }
       let sbt = document.getElementById('selBattleTroop'); if(sbt) { let v2 = sbt.value; sbt.innerHTML = htmlT; if(v2) sbt.value = v2; }
 
       let htmlL = "";
-      for (let i = 1; i <= 30; i++) htmlL += `<option value="${i}">${getStText('st_opt_lv')} ${i}</option>`;
+      for (let i = 1; i <= 30; i++) htmlL += `<option value="${i}">${getStText('st_opt_lv') || 'Livello'} ${i}</option>`;
       let scl = document.getElementById('selCityLvl'); if(scl) { let v = scl.value; scl.innerHTML = htmlL; if(v) scl.value=v; }
       let sml = document.getElementById('selMetropoliLvl'); if(sml) { let v = sml.value; sml.innerHTML = htmlL; if(v) sml.value=v; }
 
       const countryMultipliers = [0.90, 0.89, 0.88, 0.87, 0.86, 0.85, 0.84, 0.83, 0.82, 0.81, 0.80, 0.79, 0.78, 0.77, 0.76, 0.74, 0.72, 0.69, 0.65, 0.60];
-      let htmlCB = `<option value="1">${getStText('st_opt_none')}</option>`;
-      countryMultipliers.forEach((val, i) => { htmlCB += `<option value="${val}">${getStText('st_opt_level')} ${i + 1} (${Math.round(val * 100)}%)</option>`; });
+      let htmlCB = `<option value="1">${getStText('st_opt_none') || 'Nessuno'}</option>`;
+      countryMultipliers.forEach((val, i) => { htmlCB += `<option value="${val}">${getStText('st_opt_level') || 'Livello'} ${i + 1} (${Math.round(val * 100)}%)</option>`; });
       let scb = document.getElementById('selCountryBonus'); if(scb) { let v = scb.value; scb.innerHTML = htmlCB; if(v) scb.value=v; }
 
       let htmlMax = "";
-      for (let i = 9; i >= 1; i--) { htmlMax += `<option value="${i}">${i} ${getStText('st_opt_min')}</option>`; }
+      for (let i = 9; i >= 1; i--) { htmlMax += `<option value="${i}">${i} ${getStText('st_opt_min') || 'min'}</option>`; }
       let sbm = document.getElementById('selBounceMax'); if(sbm) { let v = sbm.value || "6"; sbm.innerHTML = htmlMax; sbm.value = v; }
 
       updateBounceLimits(true);
@@ -602,7 +498,7 @@
 
       minSel.innerHTML = "";
       for (let i = maxVal; i >= 1; i--) {
-        let opt = document.createElement('option'); opt.value = i; opt.text = `${i} ${getStText('st_opt_min')}`; minSel.appendChild(opt);
+        let opt = document.createElement('option'); opt.value = i; opt.text = `${i} ${getStText('st_opt_min') || 'min'}`; minSel.appendChild(opt);
       }
       if (currentMin <= maxVal) { minSel.value = currentMin; } else { minSel.value = maxVal; }
       if (!isInit) changeTroopLive();
@@ -613,7 +509,6 @@
       let t = document.getElementById('inTime'); if(t) t.value = "";
       let g = document.getElementById('inGarrison'); if(g) g.value = "";
       let c = document.getElementById('inCoord'); if(c) c.value = "";
-      let msg = document.getElementById('dbMsg'); if(msg) msg.style.display = 'none';
     }
 
     function updateUI() {
@@ -671,7 +566,7 @@
       return base * factor;
     }
 
-    // CHECK DB FITTIZIO PER ESTRARRE IL MONDO E CAMBIARE BONUS
+    // CHECK DB FITTIZIO PER ESTRARRE IL MONDO
     function checkDB() {
       let val = document.getElementById('inCoord').value;
       if (!val) return;
@@ -685,16 +580,16 @@
 
     function startCalc() {
       let lk = window.parseLK ? window.parseLK(document.getElementById('inCoord').value) : null;
-      if (!lk) return alert(getStText('st_err_link'));
-      if (lk.x === undefined || lk.y === undefined) { return alert(getStText('st_err_coord_only')); }
+      if (!lk) return alert(getStText('st_err_link') || "Inserisci link castello valido!");
+      if (lk.x === undefined || lk.y === undefined) { return alert(getStText('st_err_coord_only') || "Coordinate non trovate!"); }
       
       myCastle = { x: lk.x, y: lk.y };
       let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
-      if (!dVal || !tVal) return alert(getStText('st_err_date'));
+      if (!dVal || !tVal) return alert(getStText('st_err_date') || "Inserisci data e ora!");
       let startT = new Date(dVal + "T" + tVal);
-      if (startT < new Date(Date.now() - 60000)) return alert(getStText('st_err_past'));
+      if (startT < new Date(Date.now() - 60000)) return alert(getStText('st_err_past') || "Data nel passato!");
       let garrison = parseInt(document.getElementById('inGarrison').value);
-      if (!garrison) return alert(getStText('st_err_troops'));
+      if (!garrison) return alert(getStText('st_err_troops') || "Inserisci truppe totali!");
 
       let habRadio = document.querySelector('input[name="hab"]:checked');
       let hab = habRadio ? habRadio.value : 'castello';
@@ -708,8 +603,8 @@
       
       let limits = HAB_LIMITS[hab];
       
-      if (garrison < limits.min) return alert(`${getStText('st_err_min')} ${limits.min}`);
-      if (garrison > limits.max) return alert(`${getStText('st_err_max')} ${limits.max}`);
+      if (garrison < limits.min) return alert(`${getStText('st_err_min') || "Minimo"} ${limits.min}`);
+      if (garrison > limits.max) return alert(`${getStText('st_err_max') || "Massimo"} ${limits.max}`);
 
       let batch = parseInt(document.getElementById('selBatch').value);
       let turn1_troops = batch * 2; 
@@ -720,11 +615,7 @@
       
       let delayResContainer = document.getElementById('delay-res-container');
       if (delayResContainer) {
-          if (window.myPremiumManager && (window.myPremiumManager.isPremiumUser() || window.myPremiumManager.isFeatureUnlocked('ritardo'))) {
-              delayResContainer.style.display = 'flex';
-          } else {
-              delayResContainer.style.display = 'none';
-          }
+          delayResContainer.style.display = 'flex';
       }
 
       document.getElementById('inputArea').classList.add('hidden');
@@ -849,12 +740,12 @@
       
       let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
       let startT = new Date(dVal + "T" + tVal);
-      let pName = getStText('st_unknown') || "Castello Attaccato";
+      let pName = getStText('st_unknown') || "Sconosciuto";
       let cTypeStr = getStText('st_type_castle') || "Bersaglio";
       let linkUrl = `l+k://coordinates?${myCastle.x},${myCastle.y}&${worldId}`;
       let pD = (n) => String(n).padStart(2, '0');
       
-      document.getElementById('resHeaderInfo').innerHTML = `<b>⚔️ ${window.escapeHTML ? window.escapeHTML(pName) : pName}</b><span style="font-size:12px;color:var(--gold);display:block;margin-top:4px;">${cTypeStr}</span><a href="${linkUrl}" style="word-break: break-all;">${linkUrl}</a><span style="font-size:12px;color:#aaa;display:block;margin-top:4px;">${getStText('st_start_battle') || 'Inizio:'} ${pD(startT.getDate())}/${pD(startT.getMonth() + 1)} ${pD(startT.getHours())}:${pD(startT.getMinutes())}</span>`;
+      document.getElementById('resHeaderInfo').innerHTML = `<b>⚔️ Tuo Castello</b><span style="font-size:12px;color:var(--gold);display:block;margin-top:4px;">${cTypeStr}</span><a href="${linkUrl}" style="word-break: break-all;">${linkUrl}</a><span style="font-size:12px;color:#aaa;display:block;margin-top:4px;">${getStText('st_start_battle') || 'Inizio:'} ${pD(startT.getDate())}/${pD(startT.getMonth() + 1)} ${pD(startT.getHours())}:${pD(startT.getMinutes())}</span>`;
 
       el.innerHTML = "";
       rows.forEach((r, i) => {
@@ -942,9 +833,9 @@
 
       let delayHtml = "";
       if (isDelayEnabledGlobal && isDelayNeeded) {
-        if (isValidNow) { delayHtml = `<br><span style="color:var(--gold); font-weight:bold">${getStText('st_delay_apply') || 'Ritardo Dinamico'}</span>`; } 
-        else { delayHtml = `<br><span style="color:var(--muted); font-weight:bold">${getStText('st_delay_calc') || 'Ritardo stimato'}</span>`; }
-      } else { delayHtml = `<br><span style="color:var(--accent); font-weight:bold">${getStText('st_delay_no') || 'Nessun Ritardo'}</span>`; }
+        if (isValidNow) { delayHtml = `<br><span style="color:var(--gold); font-weight:bold">${getStText('st_delay_apply') || 'Ritardo Dinamico Applicato'}</span>`; } 
+        else { delayHtml = `<br><span style="color:var(--muted); font-weight:bold">${getStText('st_delay_calc') || 'Ritardo verrà calcolato'}</span>`; }
+      } else { delayHtml = `<br><span style="color:var(--accent); font-weight:bold">${getStText('st_delay_no') || 'Nessun Ritardo Necessario'}</span>`; }
 
       if (r.launched) {
         infoDiv.innerHTML = `<div class="info-status st-launched-text">${getStText('st_launched') || 'LANCIATO'}</div><div class="info-sub"><span class="bounce-hl">${getStText('st_bounce') || 'Rimbalzo:'} ${bStr}</span><br>Distanza: <b>${dist}</b> campi${delayHtml}</div>`;
@@ -1047,7 +938,7 @@
                 document.getElementById('selBounceMin').value = state.selBounceMin;
             }
 
-            if (state.inCoord) checkDB();
+            if (state.inCoord) document.getElementById('inCoord').oninput();
             if (state.chkDelay) syncDelay('chkDelay');
 
         } catch (e) { console.error("Errore nel ripristino:", e); }
