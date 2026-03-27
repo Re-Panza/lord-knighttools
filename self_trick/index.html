@@ -580,7 +580,7 @@
       if (!lk) return alert(getStText('st_err_link') || "Inserisci link castello valido!");
       if (lk.x === undefined || lk.y === undefined) { return alert(getStText('st_err_coord_only') || "Coordinate non trovate!"); }
       
-      myCastle = { x: lk.x, y: lk.y };
+      myCastle = { x: parseInt(lk.x), y: parseInt(lk.y) };
       let dVal = document.getElementById('inDate').value, tVal = document.getElementById('inTime').value;
       if (!dVal || !tVal) return alert(getStText('st_err_date') || "Inserisci data e ora!");
       let startT = new Date(dVal + "T" + tVal);
@@ -637,6 +637,10 @@
     }
 
     function getRingPoints(cx, cy, D, maxPoints = 5) {
+        cx = parseInt(cx); 
+        cy = parseInt(cy); 
+        D = parseInt(D);
+        
         let c_z = cy;
         let c_x = cx - Math.floor(cy / 2);
         let c_y = -c_x - c_z;
@@ -652,7 +656,8 @@
                 let px = tx + Math.floor(tz / 2);
                 let py = tz;
                 
-                if (px > 0 && py > 0) {
+                // Evita che il castello di origine finisca tra i target
+                if (px > 0 && py > 0 && !(px === cx && py === cy)) {
                     let isValid = true;
                     if (worldMap) {
                         if (worldMap.x_min !== undefined && px < worldMap.x_min) isValid = false;
@@ -668,8 +673,12 @@
                     }
 
                     if (isValid) {
-                        validPoints.push({x: px, y: py});
-                        if (validPoints.length >= maxPoints) return validPoints;
+                        // Filtro rigidissimo anti-duplicati
+                        let isDuplicate = validPoints.some(p => p.x === px && p.y === py);
+                        if (!isDuplicate) {
+                            validPoints.push({x: px, y: py});
+                            if (validPoints.length >= maxPoints) return validPoints;
+                        }
                     }
                 }
                 tx += vectors[i][0]; ty += vectors[i][1]; tz += vectors[i][2];
@@ -729,14 +738,6 @@
       let c1 = document.getElementById('chkDelay'); if(c1) c1.checked = v; 
       let c2 = document.getElementById('chkDelayRes'); if(c2) c2.checked = v;
       changeTroopLive();
-    }
-
-    function launchSingleLink(i, idx, url) {
-      if (rows[i] && rows[i].target && rows[i].target.points) {
-        rows[i].target.points[idx].clicked = true;
-      }
-      window.location.href = url;
-      renderList();
     }
 
     function renderList() {
@@ -869,14 +870,12 @@
                   r.target.points.forEach((p, idx) => {
                       let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
                       let linkLabel = `Link ${idx + 1}`;
-                      let btnClass = p.clicked ? "btn-copri active-cover" : "lnk-btn-launch";
-                      let btnText = p.clicked ? "COPRI" : "INVIA";
                       
                       linksHtml += `
                       <div class="target-row-generated" style="flex-direction: column; gap: 8px; text-align: center;">
                           <a href="${url}" class="link-text" style="font-size: 14px; font-weight: bold; margin: 0;">${linkLabel}</a>
-                          <div class="${btnClass}" style="width: 100%; height: 32px;" onclick="event.stopPropagation(); launchSingleLink(${i}, ${idx}, '${url}')">
-                              ${btnText}
+                          <div class="lnk-btn-launch" style="width: 100%; height: 32px;" onclick="event.stopPropagation(); window.location.href='${url}';">
+                              INVIA
                           </div>
                       </div>`;
                   });
