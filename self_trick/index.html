@@ -403,7 +403,6 @@
 
     async function loadGameData() {
       try {
-        // CARICA DA LORD-KNIGHTTOOLS COME RICHIESTO!
         let response = await fetch('/lord-knighttools/database_truppe.json?v=' + Date.now());
         if (!response.ok) throw new Error("HTTP Error: " + response.status);
         const json = await response.json();
@@ -411,7 +410,6 @@
         if (!GAME_DATA) throw new Error("Empty or invalid JSON");
         
         try {
-            // CARICA IL QUADERNO DELLE MAPPE
             let mapResponse = await fetch('/lord-knighttools/mappe_mondi.json?v=' + Date.now());
             if (mapResponse.ok) {
                 MAP_DATA = await mapResponse.json();
@@ -566,7 +564,6 @@
       return base * factor;
     }
 
-    // CHECK DB FITTIZIO PER ESTRARRE IL MONDO
     function checkDB() {
       let val = document.getElementById('inCoord').value;
       if (!val) return;
@@ -639,7 +636,6 @@
       renderList();
     }
 
-    // ==== GENERATORE DI PUNTI AD ANELLO ====
     function getRingPoints(cx, cy, D, maxPoints = 5) {
         let c_z = cy;
         let c_x = cx - Math.floor(cy / 2);
@@ -733,6 +729,14 @@
       let c1 = document.getElementById('chkDelay'); if(c1) c1.checked = v; 
       let c2 = document.getElementById('chkDelayRes'); if(c2) c2.checked = v;
       changeTroopLive();
+    }
+
+    function launchSingleLink(i, idx, url) {
+      if (rows[i] && rows[i].target && rows[i].target.points) {
+        rows[i].target.points[idx].clicked = true;
+      }
+      window.location.href = url;
+      renderList();
     }
 
     function renderList() {
@@ -865,12 +869,14 @@
                   r.target.points.forEach((p, idx) => {
                       let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
                       let linkLabel = `Link ${idx + 1}`;
+                      let btnClass = p.clicked ? "btn-copri active-cover" : "lnk-btn-launch";
+                      let btnText = p.clicked ? "COPRI" : "INVIA";
                       
                       linksHtml += `
-                      <div class="target-row-generated">
-                          <a href="${url}" class="link-text" style="font-size: 14px; font-weight: bold;">${linkLabel}</a>
-                          <div class="lnk-btn-launch" onclick="event.stopPropagation(); window.location.href='${url}'; markLaunched(${i})">
-                              INVIA
+                      <div class="target-row-generated" style="flex-direction: column; gap: 8px; text-align: center;">
+                          <a href="${url}" class="link-text" style="font-size: 14px; font-weight: bold; margin: 0;">${linkLabel}</a>
+                          <div class="${btnClass}" style="width: 100%; height: 32px;" onclick="event.stopPropagation(); launchSingleLink(${i}, ${idx}, '${url}')">
+                              ${btnText}
                           </div>
                       </div>`;
                   });
