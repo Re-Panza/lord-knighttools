@@ -1,4 +1,4 @@
-var APP_VERSION = 114;
+var APP_VERSION = 115;
 
 var APP_CHANGELOG = `
   <li></li>`;
