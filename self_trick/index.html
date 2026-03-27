@@ -869,7 +869,7 @@
                   linksHtml += `<div class="target-grid">`;
                   r.target.points.forEach((p, idx) => {
                       let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
-                      let linkLabel = `Link ${idx + 1}`;
+                      let linkLabel = url;
                       
                       linksHtml += `
                       <div class="target-row-generated" style="flex-direction: column; gap: 8px; text-align: center;">
