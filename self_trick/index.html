@@ -636,36 +636,41 @@
       renderList();
     }
 
+    // ==== NUOVO GENERATORE BRUTE-FORCE A PROVA DI ERRORE ====
     function getRingPoints(cx, cy, D, maxPoints = 5) {
         cx = parseInt(cx); 
         cy = parseInt(cy); 
         D = parseInt(D);
         
-        let c_z = cy;
-        let c_x = cx - Math.floor(cy / 2);
-        let c_y = -c_x - c_z;
-        
-        let tx = c_x + D; let ty = c_y - D; let tz = c_z;
-        let vectors = [ [-1, 1, 0], [-1, 0, 1], [0, -1, 1], [1, -1, 0], [1, 0, -1], [0, 1, -1] ];
-        
         let allValidPoints = [];
         let worldMap = (MAP_DATA && MAP_DATA[worldId]) ? MAP_DATA[worldId] : null;
 
-        // Estrazione di TUTTI i punti validi lungo il perimetro dell'esagono
-        for (let i = 0; i < 6; i++) {
-            for (let step = 0; step < D; step++) {
-                let px = tx + Math.floor(tz / 2);
-                let py = tz;
+        // Limiti massimi della bounding box basati sulla distanza
+        let yMin = Math.max(1, cy - D);
+        let yMax = cy + D;
+        let xMin = Math.max(1, cx - D - Math.ceil(D/2));
+        let xMax = cx + D + Math.ceil(D/2);
+
+        // Scansione di ogni singola coordinata nell'area interessata
+        for (let py = yMin; py <= yMax; py++) {
+            for (let px = xMin; px <= xMax; px++) {
                 
-                // Evita che il castello di origine finisca tra i target
-                if (px > 0 && py > 0 && !(px === cx && py === cy)) {
+                // Evita il castello di origine
+                if (px === cx && py === cy) continue;
+
+                // Calcolo della distanza ESATTA per eliminare distorsioni cubiche
+                if (window.getDist(cx, cy, px, py) === D) {
+                    
                     let isValid = true;
+                    
                     if (worldMap) {
+                        // Controlli rigidi sui confini della mappa
                         if (worldMap.x_min !== undefined && px < worldMap.x_min) isValid = false;
                         if (worldMap.x_max !== undefined && px > worldMap.x_max) isValid = false;
                         if (worldMap.y_min !== undefined && py < worldMap.y_min) isValid = false;
                         if (worldMap.y_max !== undefined && py > worldMap.y_max) isValid = false;
                         
+                        // Controlli rigidi sui buchi neri
                         if (isValid && worldMap.hole_x !== undefined && window.getDist) {
                             if (window.getDist(worldMap.hole_x, worldMap.hole_y, px, py) <= (worldMap.hole_radius || 0)) {
                                 isValid = false;
@@ -674,29 +679,29 @@
                     }
 
                     if (isValid) {
+                        // Previene inserimenti multipli
                         let isDuplicate = allValidPoints.some(p => p.x === px && p.y === py);
                         if (!isDuplicate) {
                             allValidPoints.push({x: px, y: py});
                         }
                     }
                 }
-                tx += vectors[i][0]; ty += vectors[i][1]; tz += vectors[i][2];
             }
         }
-        
-        // Se i punti validi sono meno o uguali al massimo richiesto, li restituiamo tutti
+
+        // Se abbiamo trovato meno punti del massimo richiesto (es. sui bordi della mappa), restituiamoli tutti
         if (allValidPoints.length <= maxPoints) {
             return allValidPoints;
         }
-        
-        // Altrimenti, ne estraiamo 5 distribuiti uniformemente su tutta la circonferenza
+
+        // Estrazione di 5 punti equamente distanziati nell'array per pescare in direzioni geografiche diverse
         let sampledPoints = [];
         let stepSize = allValidPoints.length / maxPoints;
         for (let i = 0; i < maxPoints; i++) {
             let index = Math.floor(i * stepSize);
             sampledPoints.push(allValidPoints[index]);
         }
-        
+
         return sampledPoints;
     }
 
