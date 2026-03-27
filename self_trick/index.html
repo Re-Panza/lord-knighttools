@@ -864,7 +864,15 @@
                   linksHtml += `<div class="target-grid">`;
                   r.target.points.forEach((p, idx) => {
                       let url = `l+k://coordinates?${p.x},${p.y}&${worldId}`;
-                      linksHtml += `<div class="target-row-generated"><a href="${url}" class="link-text">${url}</a><div class="lnk-btn-launch" onclick="event.stopPropagation(); markLaunched(${i})">${getStText('st_btn_launch') || 'LANCIA'}</div></div>`;
+                      let linkLabel = `Link ${idx + 1}`;
+                      
+                      linksHtml += `
+                      <div class="target-row-generated">
+                          <a href="${url}" class="link-text" style="font-size: 14px; font-weight: bold;">${linkLabel}</a>
+                          <div class="lnk-btn-launch" onclick="event.stopPropagation(); window.location.href='${url}'; markLaunched(${i})">
+                              INVIA
+                          </div>
+                      </div>`;
                   });
                   linksHtml += `</div>`;
               } else {
