@@ -648,9 +648,10 @@
         let tx = c_x + D; let ty = c_y - D; let tz = c_z;
         let vectors = [ [-1, 1, 0], [-1, 0, 1], [0, -1, 1], [1, -1, 0], [1, 0, -1], [0, 1, -1] ];
         
-        let validPoints = [];
+        let allValidPoints = [];
         let worldMap = (MAP_DATA && MAP_DATA[worldId]) ? MAP_DATA[worldId] : null;
 
+        // Estrazione di TUTTI i punti validi lungo il perimetro dell'esagono
         for (let i = 0; i < 6; i++) {
             for (let step = 0; step < D; step++) {
                 let px = tx + Math.floor(tz / 2);
@@ -673,18 +674,30 @@
                     }
 
                     if (isValid) {
-                        // Filtro rigidissimo anti-duplicati
-                        let isDuplicate = validPoints.some(p => p.x === px && p.y === py);
+                        let isDuplicate = allValidPoints.some(p => p.x === px && p.y === py);
                         if (!isDuplicate) {
-                            validPoints.push({x: px, y: py});
-                            if (validPoints.length >= maxPoints) return validPoints;
+                            allValidPoints.push({x: px, y: py});
                         }
                     }
                 }
                 tx += vectors[i][0]; ty += vectors[i][1]; tz += vectors[i][2];
             }
         }
-        return validPoints;
+        
+        // Se i punti validi sono meno o uguali al massimo richiesto, li restituiamo tutti
+        if (allValidPoints.length <= maxPoints) {
+            return allValidPoints;
+        }
+        
+        // Altrimenti, ne estraiamo 5 distribuiti uniformemente su tutta la circonferenza
+        let sampledPoints = [];
+        let stepSize = allValidPoints.length / maxPoints;
+        for (let i = 0; i < maxPoints; i++) {
+            let index = Math.floor(i * stepSize);
+            sampledPoints.push(allValidPoints[index]);
+        }
+        
+        return sampledPoints;
     }
 
     function forceRecalcTargets() {
