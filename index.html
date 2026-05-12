@@ -6,17 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <p>Apertura dell'app in corso...</p>
+    <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
+        <p>Apertura dell'app in corso...</p>
+        <p style="font-size: 0.8em; color: #666;">Se non succede nulla, assicurati di avere l'app installata.</p>
+    </div>
+
     <script>
-        // Prende solo i parametri (es. ?893&337)
-        var parametri = window.location.search; 
+        // Questa funzione legge tutto quello che c'è dopo il "?" nell'indirizzo
+        // Esempio: se il link è .../?player?7&337, "parametri" diventa player?7&337
+        var parametri = window.location.search.substring(1); 
         
-        // Se trova i numeri, crea il link originale e apre l'app
         if (parametri) {
-            var linkApp = "l+k://player" + parametri;
-            window.location.replace(linkApp); 
+            // Ricostruisce il link originale: l+k:// + quello che abbiamo catturato
+            var linkApp = "l+k://" + parametri;
+            
+            // Prova ad aprire l'app immediatamente
+            window.location.replace(linkApp);
+            
+            // Backup: se dopo 2 secondi è ancora qui, mostra un tasto manuale
+            setTimeout(function() {
+                document.body.innerHTML = `
+                    <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
+                        <p>L'app non si è aperta automaticamente?</p>
+                        <a href="${linkApp}" style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Clicca qui per aprire</a>
+                    </div>
+                `;
+            }, 2000);
         } else {
-            document.body.innerHTML = "<p>Errore: Nessun link trovato.</p>";
+            document.body.innerHTML = "<p style='text-align:center;'>Errore: Nessun parametro trovato nel link.</p>";
         }
     </script>
 </body>
