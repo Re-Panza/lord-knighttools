@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apertura in corso...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <p>Apertura dell'app in corso...</p>
+    <script>
+        // Prende solo i parametri (es. ?893&337)
+        var parametri = window.location.search; 
+        
+        // Se trova i numeri, crea il link originale e apre l'app
+        if (parametri) {
+            var linkApp = "l+k://player" + parametri;
+            window.location.replace(linkApp); 
+        } else {
+            document.body.innerHTML = "<p>Errore: Nessun link trovato.</p>";
+        }
+    </script>
+</body>
+</html>
